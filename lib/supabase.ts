@@ -1,58 +1,61 @@
 /**
- * Atlas Public Data Client
- * Nutzt direkte PostgREST-Calls mit Anon-Key (RLS-geschützt).
+ * Atlas Public Data Client — Edge Function Only
+ * 
+ * Alle Daten kommen über EINEN Endpoint:
+ *   https://wsubvpdyakzpnapgsrnm.supabase.co/functions/v1/atlas-public-data/...
+ * 
+ * Das vermeidet DNS-Cache-Overflow auf Vercel, weil nur 1 Domain
+ * aufgelöst wird statt mehrere parallele PostgREST-Calls.
  */
 
-const SUPABASE_URL = 'https://wsubvpdyakzpnapgsrnm.supabase.co';
-const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  '';
-const REST_BASE = `${SUPABASE_URL}/rest/v1`;
+const EF_BASE =
+  'https://wsubvpdyakzpnapgsrnm.supabase.co/functions/v1/atlas-public-data';
 
 async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-export async function restGet<T = unknown>(
-  table: string,
-  query: string,
+/**
+ * Einziger Fetch-Helper. Ruft die Edge Function auf.
+ * Retry bei 502/503/504 mit Exponential Backoff.
+ */
+export async function efGet<T = unknown>(
+  path: string,
   revalidate = 86400
-): Promise<T[]> {
-  const url = `${REST_BASE}/${table}?${query}`;
+): Promise<T> {
+  const url = `${EF_BASE}/${path}`;
   const MAX_RETRIES = 3;
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
       const r = await fetch(url, {
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          Accept: 'application/json',
-        },
+        headers: { Accept: 'application/json' },
         next: { revalidate },
       });
 
-      // DNS-Overflow oder Upstream-Fehler → retry
-      if (r.status === 503 || r.status === 502 || r.status === 504) {
+      if (r.status === 502 || r.status === 503 || r.status === 504) {
         if (attempt < MAX_RETRIES) {
-          await sleep(250 * Math.pow(2, attempt)); // 250ms, 500ms, 1000ms
+          await sleep(300 * Math.pow(2, attempt));
           continue;
         }
       }
 
       if (!r.ok) {
-        console.error(`Supabase REST ${table} failed: ${r.status} ${await r.text()}`);
-        return [];
+        const body = await r.text().catch(() => '');
+        console.error(`EF ${path} failed: ${r.status} ${body}`);
+        throw new Error(`EF ${path}: ${r.status}`);
       }
+
       return r.json();
     } catch (err) {
       if (attempt < MAX_RETRIES) {
-        await sleep(250 * Math.pow(2, attempt));
+        await sleep(300 * Math.pow(2, attempt));
         continue;
       }
-      console.error(`Supabase REST ${table} error:`, err);
-      return [];
+      console.error(`EF ${path} error after ${MAX_RETRIES} retries:`, err);
+      throw err;
     }
   }
-  return [];
+
+  throw new Error(`EF ${path}: exhausted retries`);
 }

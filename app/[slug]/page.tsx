@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import {
   getKommunePageData,
   groupArtenByArtengruppe,
-  getProdukte,
   getTopKommunen,
 } from '@/lib/queries';
 import HeroSection from '@/components/HeroSection';
@@ -15,8 +14,7 @@ export const revalidate = 86400;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  // Pre-render nur Top-5 zur Build-Zeit (DNS-Limits vermeiden).
-  // Alles andere kommt on-demand via ISR (revalidate=86400).
+  // Pre-render Top-5 via EF (1 Call, kein DNS-Overflow)
   const top = await getTopKommunen(5);
   return top.map((k) => ({ slug: k.slug }));
 }
@@ -49,17 +47,12 @@ export default async function KommunePage({
   const data = await getKommunePageData(slug);
   if (!data) notFound();
 
-  const { kommune, kreis, arten } = data;
+  const { kommune, kreis, arten, produkte } = data;
   const artGroups = groupArtenByArtengruppe(arten);
-  const artengruppen = artGroups.map((g) => g.artengruppe);
 
-  const allProdukte = await getProdukte({
-    artengruppen,
-    kontextTags: ['bauen'],
-  });
-
-  const verfuegbar = allProdukte.filter((p) => p.status === 'available').slice(0, 4);
-  const planned = allProdukte.filter((p) => p.status === 'planned').slice(0, 4);
+  // Produkte kommen direkt aus der EF-Response (kein separater Call)
+  const verfuegbar = produkte.filter((p) => p.status === 'available').slice(0, 4);
+  const planned = produkte.filter((p) => p.status === 'planned').slice(0, 4);
 
   const jsonLd = {
     '@context': 'https://schema.org',

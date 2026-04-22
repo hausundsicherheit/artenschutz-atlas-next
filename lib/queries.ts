@@ -1,4 +1,8 @@
-import { restGet } from './supabase';
+import { efGet } from './supabase';
+
+// ========================================================================
+// Types
+// ========================================================================
 
 export type Kommune = {
   id: number;
@@ -9,17 +13,35 @@ export type Kommune = {
   bundesland_id: number;
   latitude: number | null;
   longitude: number | null;
-  bundesland?: string;          // aus Embed
-  kreis_name?: string;          // aus Embed
+  bundesland?: string;
+  kreis_name?: string;
 };
 
 export type Kreis = {
   id: number;
   name: string;
+  name_full?: string;
   bundesland_id: number;
   unb_name: string | null;
   unb_url: string | null;
   unb_email: string | null;
+  unb_telefon?: string | null;
+  unb_adresse?: string | null;
+  artenschutz_url?: string | null;
+  nabu_name?: string | null;
+  nabu_url?: string | null;
+};
+
+export type Bundesland = {
+  id: number;
+  name: string;
+  kuerzel: string;
+  landesamt_name: string | null;
+  landesamt_url: string | null;
+  verordnung_name: string | null;
+  verordnung_url: string | null;
+  hat_eigene_verordnung: string | null;
+  besonderheiten: string | null;
 };
 
 export type Art = {
@@ -34,6 +56,10 @@ export type Art = {
   foto_url: string | null;
   bild_attribution: string | null;
   bild_lizenz: string | null;
+  konflikt_bauvorhaben?: string[] | null;
+  bauzeitfenster?: string | null;
+  haeufigkeit?: string | null;
+  verifiziert?: boolean;
 };
 
 export type Produkt = {
@@ -54,6 +80,10 @@ export type Produkt = {
   sw6_product_number: string | null;
 };
 
+// ========================================================================
+// Artengruppen Labels
+// ========================================================================
+
 const ARTENGRUPPEN_LABEL: Record<string, string> = {
   gebaeudebrueter: 'Gebäudebrüter',
   gartenvogel: 'Gartenvögel',
@@ -68,88 +98,66 @@ const ARTENGRUPPEN_LABEL: Record<string, string> = {
 export const artengruppeLabel = (key: string) => ARTENGRUPPEN_LABEL[key] || key;
 
 // ========================================================================
-// KOMMUNEN-DATA: EIN einziger REST-Call mit tiefem Embedding
+// Edge Function Data Fetching — EIN Call pro Page
 // ========================================================================
-// Statt 4 parallele Requests (→ DNS Cache Overflow auf Vercel) holen wir
-// Kommune + Bundesland + Kreis + alle Arten über die Kreis-Junction in EINEM Call.
 
-type KommuneFull = {
-  id: number;
-  slug: string;
-  name: string;
-  einwohner: number | null;
-  kreis_id: number;
-  bundesland_id: number;
-  latitude: number | null;
-  longitude: number | null;
-  atlas_bundeslaender: { name: string } | null;
-  atlas_kreise: {
-    id: number;
-    name: string;
-    bundesland_id: number;
-    unb_name: string | null;
-    unb_url: string | null;
-    unb_email: string | null;
-    atlas_arten_kreise: {
-      atlas_arten: Art;
-    }[];
-  } | null;
+type GemeindeResponse = {
+  gemeinde: Record<string, unknown>;
+  kreis: Record<string, unknown> | null;
+  bundesland: Record<string, unknown> | null;
+  arten: Art[];
+  produkte: Produkt[];
+  error?: string;
 };
 
 export type KommunePageData = {
   kommune: Kommune;
   kreis: Kreis | null;
+  bundesland: Bundesland | null;
   arten: Art[];
+  produkte: Produkt[];
 };
 
-export async function getKommunePageData(slug: string): Promise<KommunePageData | null> {
-  const select =
-    'id,slug,name,einwohner,kreis_id,bundesland_id,latitude,longitude,' +
-    'atlas_bundeslaender(name),' +
-    'atlas_kreise(id,name,bundesland_id,unb_name,unb_url,unb_email,' +
-      'atlas_arten_kreise(' +
-        'atlas_arten(id,slug,name_deutsch,name_wissenschaftlich,artengruppe,' +
-          'schutzstatus,rote_liste_deutschland,beschreibung_kurz,foto_url,bild_attribution,bild_lizenz)' +
-      ')' +
-    ')';
+export async function getKommunePageData(
+  slug: string
+): Promise<KommunePageData | null> {
+  try {
+    const data = await efGet<GemeindeResponse>(
+      `gemeinde/${encodeURIComponent(slug)}`
+    );
 
-  const rows = await restGet<KommuneFull>(
-    'atlas_kommunen',
-    `slug=eq.${encodeURIComponent(slug)}&select=${encodeURIComponent(select)}&limit=1`
-  );
-  const r = rows[0];
-  if (!r) return null;
+    if (data.error || !data.gemeinde) return null;
 
-  const kommune: Kommune = {
-    id: r.id,
-    slug: r.slug,
-    name: r.name,
-    einwohner: r.einwohner,
-    kreis_id: r.kreis_id,
-    bundesland_id: r.bundesland_id,
-    latitude: r.latitude,
-    longitude: r.longitude,
-    bundesland: r.atlas_bundeslaender?.name,
-    kreis_name: r.atlas_kreise?.name,
-  };
+    const g = data.gemeinde;
+    const kommune: Kommune = {
+      id: g.id as number,
+      slug: g.slug as string,
+      name: g.name as string,
+      einwohner: g.einwohner as number | null,
+      kreis_id: g.kreis_id as number,
+      bundesland_id: g.bundesland_id as number,
+      latitude: g.latitude as number | null,
+      longitude: g.longitude as number | null,
+      bundesland: data.bundesland?.name as string | undefined,
+      kreis_name: data.kreis?.name as string | undefined,
+    };
 
-  const kreis: Kreis | null = r.atlas_kreise
-    ? {
-        id: r.atlas_kreise.id,
-        name: r.atlas_kreise.name,
-        bundesland_id: r.atlas_kreise.bundesland_id,
-        unb_name: r.atlas_kreise.unb_name,
-        unb_url: r.atlas_kreise.unb_url,
-        unb_email: r.atlas_kreise.unb_email,
-      }
-    : null;
-
-  const arten: Art[] = (r.atlas_kreise?.atlas_arten_kreise || [])
-    .map((j) => j.atlas_arten)
-    .filter(Boolean);
-
-  return { kommune, kreis, arten };
+    return {
+      kommune,
+      kreis: (data.kreis as Kreis) || null,
+      bundesland: (data.bundesland as Bundesland) || null,
+      arten: data.arten || [],
+      produkte: data.produkte || [],
+    };
+  } catch (err) {
+    console.error(`getKommunePageData(${slug}) failed:`, err);
+    return null;
+  }
 }
+
+// ========================================================================
+// Gruppen-Helper
+// ========================================================================
 
 export function groupArtenByArtengruppe(arten: Art[]) {
   const grouped: Record<string, Art[]> = {};
@@ -168,41 +176,21 @@ export function groupArtenByArtengruppe(arten: Art[]) {
     }));
 }
 
-export async function getProdukte(opts: {
-  artengruppen?: string[];
-  kontextTags?: string[];
-}): Promise<Produkt[]> {
-  const orParts: string[] = [];
-  if (opts.artengruppen?.length) {
-    orParts.push(`artengruppe.in.(${opts.artengruppen.join(',')})`);
-  }
-  if (opts.kontextTags?.length) {
-    orParts.push(`kontext_tag.in.(${opts.kontextTags.join(',')})`);
-  }
-  if (!orParts.length) return [];
+// ========================================================================
+// Top-Kommunen (für generateStaticParams)
+// ========================================================================
 
-  const orQuery = `or=(${orParts.join(',')})`;
-  const rows = await restGet<Produkt>(
-    'atlas_art_produkte',
-    `${orQuery}&aktiv=eq.true&order=sort_order.asc&select=*`
-  );
-  return rows;
-}
+type TopKommunenResponse = { kommunen: Kommune[] };
 
 export async function getTopKommunen(limit = 20): Promise<Kommune[]> {
-  const select =
-    'id,slug,name,einwohner,kreis_id,bundesland_id,latitude,longitude,atlas_bundeslaender(name)';
-  const rows = await restGet<
-    Omit<Kommune, 'bundesland' | 'kreis_name'> & {
-      atlas_bundeslaender?: { name: string } | null;
-    }
-  >(
-    'atlas_kommunen',
-    `select=${encodeURIComponent(select)}&einwohner=not.is.null&order=einwohner.desc.nullslast&limit=${limit}`
-  );
-  return rows.map((r) => ({
-    ...r,
-    bundesland: r.atlas_bundeslaender?.name,
-  }));
+  try {
+    const data = await efGet<TopKommunenResponse>(
+      `top-kommunen?limit=${limit}`,
+      3600 // 1h revalidate für Build
+    );
+    return data.kommunen || [];
+  } catch (err) {
+    console.error('getTopKommunen failed:', err);
+    return [];
+  }
 }
-
