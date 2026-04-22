@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400..600&display=swap');
+
+:root {
+  --ink: #1e3d28;
+  --moss: #2d5a3d;
+  --moss-dark: #1f4029;
+  --sand: #f4ede0;
+  --sand-warm: #ebe0cd;
+  --cream: #fbf7ef;
+  --clay: #b85444;
+  --amber: #c8821a;
+  --text-muted: #5a6b5c;
+  --text-dim: #8a9489;
+  --border: #e5dcc8;
+  --border-strong: #d4c8ac;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: #fdfbf6;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+a { color: var(--moss); text-decoration: none; transition: color 0.15s; }
+a:hover { color: var(--moss-dark); text-decoration: underline; text-decoration-thickness: 0.5px; text-underline-offset: 3px; }
+
+h1, h2, h3, h4 { font-family: 'Fraunces', Georgia, serif; font-weight: 400; color: var(--ink); letter-spacing: -0.01em; line-height: 1.2; }
