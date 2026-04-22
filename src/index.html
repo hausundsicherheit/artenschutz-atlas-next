@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artenschutz-Atlas — Ihr Bauvorhaben, unsere geschützten Arten</title>
+<meta name="description" content="Bundesweiter Leitfaden für Bauherren, Architekten und Sanierer. 45 geschützte Arten, 10.953 Gemeinden, 16 Bundesländer — alles was Sie für Ihr Projekt wissen müssen.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --moss:#2d5a3d; --moss-dark:#1e3d28; --moss-light:#4a7d5a;
+  --sand:#f5ede0; --sand-warm:#ebe0cd; --cream:#faf7f1;
+  --clay:#b85444; --clay-soft:#d4a390;
+  --amber:#c18730;
+  --ink:#1a1f1c; --ink-soft:#2c3530;
+  --text:#3d4440; --text-muted:#6b7470; --text-dim:#8a928d;
+  --border:rgba(45,90,61,.12); --border-strong:rgba(45,90,61,.25);
+  --shadow:0 1px 2px rgba(30,61,40,.04), 0 4px 12px rgba(30,61,40,.05);
+  --shadow-lg:0 4px 8px rgba(30,61,40,.06), 0 16px 32px rgba(30,61,40,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{color:var(--ink);font-weight:500;letter-spacing:-0.01em;line-height:1.25}
+h1{font-family:'Fraunces',Georgia,serif;font-weight:400;letter-spacing:-0.02em}
+a{color:var(--moss);text-decoration:none;transition:color .15s}
+a:hover{color:var(--moss-dark);text-decoration:underline;text-underline-offset:3px}
+.container{max-width:1320px;margin:0 auto;padding:0 2rem}
+.serif{font-family:'Fraunces',serif}
+
+/* NAV */
+.nav{background:rgba(250,247,241,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:50}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;max-width:1320px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:18px;color:var(--ink);font-weight:500}
+.brand-icon{width:28px;height:28px;background:var(--moss);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white}
+.nav-links{display:flex;gap:1.75rem;font-size:14px}
+.nav-links a{color:var(--text)}
+.nav-cta{background:var(--moss);color:white;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500}
+.nav-cta:hover{background:var(--moss-dark);color:white;text-decoration:none}
+@media (max-width:720px){.nav-links{display:none}}
+
+/* HERO */
+.hero{position:relative;padding:3.5rem 0 4rem;background:linear-gradient(180deg,var(--cream) 0%,var(--sand) 100%);overflow:hidden}
+.hero::before{content:"";position:absolute;top:-20%;right:-10%;width:60%;height:140%;background-image:radial-gradient(circle at 40% 50%,rgba(184,84,68,.05) 0%,transparent 55%);pointer-events:none}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.15fr 1fr;gap:3rem;align-items:center}
+@media (max-width:960px){.hero-grid{grid-template-columns:1fr;gap:2rem}.hero-right{order:-1}}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:500;color:var(--clay);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1.25rem;background:white;padding:8px 16px;border-radius:100px;border:0.5px solid var(--border)}
+.hero-eyebrow .dot{width:7px;height:7px;background:var(--clay);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero h1{font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1.02;margin-bottom:1.25rem;color:var(--ink)}
+.hero h1 em{font-style:italic;color:var(--moss);font-weight:400}
+.hero-lead{font-size:clamp(16px,1.3vw,18px);line-height:1.55;color:var(--text-muted);margin:0 0 2rem;font-family:'Fraunces',serif;font-weight:300;max-width:540px}
+.hero-stats{display:flex;gap:2rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.5rem;border-top:0.5px solid var(--border)}
+.hero-stat{text-align:left}
+.hero-stat .val{font-family:'Fraunces',serif;font-size:1.8rem;color:var(--moss);line-height:1;font-weight:500}
+.hero-stat .lb{font-size:10.5px;color:var(--text-muted);margin-top:5px;letter-spacing:1px;text-transform:uppercase;font-weight:500}
+
+/* MAP CARD */
+.map-card{background:white;border-radius:16px;border:0.5px solid var(--border);box-shadow:var(--shadow-lg);overflow:hidden}
+.map-card-head{display:flex;align-items:center;gap:8px;padding:0.9rem 1.25rem;border-bottom:0.5px solid var(--border);background:var(--cream);font-size:11px;font-weight:500;color:var(--ink);letter-spacing:.8px;text-transform:uppercase}
+.map-card-head svg{color:var(--moss);flex-shrink:0}
+.map-card-hint{margin-left:auto;color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:normal;font-size:11.5px}
+#de-map{width:100%;height:420px;background:#e8eeeb}
+.map-card-foot{padding:0.85rem 1.25rem;font-size:12.5px;color:var(--text-muted);border-top:0.5px solid var(--border);background:var(--cream);min-height:40px;line-height:1.5}
+.map-card-foot strong{color:var(--ink);font-weight:500}
+.map-card-foot a{color:var(--moss);font-weight:500}
+
+/* Leaflet custom tooltip */
+.de-map-tooltip{
+  background:var(--ink) !important;
+  color:white !important;
+  border:none !important;
+  border-radius:6px !important;
+  padding:5px 10px !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+  font-family:'Inter',sans-serif !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.2) !important;
+}
+.de-map-tooltip:before{border-top-color:var(--ink) !important}
+.leaflet-container{font-family:'Inter',sans-serif;background:#e8eeeb !important}
+.leaflet-control-zoom a{background:white !important;color:var(--ink) !important;border:0.5px solid var(--border) !important}
+.leaflet-control-zoom a:hover{background:var(--cream) !important;color:var(--moss) !important}
+
+/* SEARCH */
+.search-wrap{position:relative;max-width:640px;margin:0 auto;z-index:20}
+.search-box{display:flex;align-items:center;background:white;border:0.5px solid var(--border);border-radius:14px;padding:4px;box-shadow:var(--shadow-lg);transition:box-shadow .2s,transform .2s}
+.search-box:focus-within{box-shadow:0 12px 36px rgba(45,90,61,.15);transform:translateY(-1px)}
+.search-box svg{width:22px;height:22px;margin:0 14px;color:var(--text-muted);flex-shrink:0}
+.search-input{flex:1;border:none;outline:none;padding:18px 0;font-size:17px;background:transparent;color:var(--ink);font-family:'Inter',sans-serif}
+.search-input::placeholder{color:var(--text-dim)}
+.search-btn{background:var(--moss);color:white;border:none;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s}
+.search-btn:hover{background:var(--moss-dark)}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:white;border:0.5px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);max-height:400px;overflow-y:auto;display:none}
+.search-results.open{display:block}
+.search-result{padding:14px 18px;border-bottom:0.5px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:12px;transition:background .1s}
+.search-result:hover{background:var(--cream)}
+.search-result:last-child{border-bottom:none}
+.search-result .plz{font-family:'Fraunces',serif;color:var(--moss);font-weight:500;font-size:14px;min-width:52px}
+.search-result .name{flex:1;color:var(--ink);font-size:14.5px;font-weight:500}
+.search-result .einwohner{font-size:12px;color:var(--text-dim)}
+.search-example{font-size:12.5px;color:var(--text-dim);margin-top:12px;text-align:center}
+.search-example button{background:none;border:none;color:var(--moss);text-decoration:underline;cursor:pointer;padding:0 4px;font-size:12.5px;font-family:'Inter',sans-serif}
+
+/* SECTION BASE */
+.section{padding:2.75rem 0}
+#warum{padding-bottom:1rem}
+.section-head{max-width:720px;margin:0 auto 2rem;text-align:center}
+.section-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:500;color:var(--clay);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:0.75rem}
+.section-eyebrow::before,.section-eyebrow::after{content:"";width:24px;height:1px;background:var(--clay)}
+.section h2{font-family:'Fraunces',serif;font-size:clamp(1.7rem,3.5vw,2.4rem);margin-bottom:0.85rem;color:var(--ink);font-weight:400;line-height:1.15}
+.section h2 em{font-style:italic;color:var(--moss);font-weight:400}
+.section-lead{font-size:16.5px;color:var(--text-muted);line-height:1.6;font-family:'Fraunces',serif;font-weight:300}
+
+/* WARUM-ARTENSCHUTZ */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.1rem}
+.why-card{background:white;padding:1.5rem 1.5rem;border-radius:14px;border:0.5px solid var(--border);transition:transform .2s,box-shadow .2s}
+.why-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.why-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem}
+.why-icon svg{width:22px;height:22px}
+.why-icon.clr-law{background:#fae5dd;color:#993c1d}
+.why-icon.clr-nature{background:#d9ede3;color:#0f6e56}
+.why-icon.clr-legal{background:#fff0d0;color:#8a5a15}
+.why-card h3{font-family:'Fraunces',serif;font-size:1.2rem;margin-bottom:0.5rem;color:var(--ink);font-weight:500}
+.why-card p{color:var(--text-muted);font-size:13.5px;line-height:1.6}
+.why-card strong{color:var(--ink);font-weight:500}
+
+/* ARTEN-TEASER — prominenter Hinweis zwischen WARUM und VORTEILE */
+.arten-hinweis{margin:1.25rem auto 0;max-width:900px}
+.arten-hinweis a{display:flex;align-items:center;gap:1.25rem;padding:1.1rem 1.5rem;background:white;border:0.5px solid var(--border);border-radius:14px;text-decoration:none;color:inherit;transition:all .2s;box-shadow:var(--shadow)}
+.arten-hinweis a:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);text-decoration:none;color:inherit;border-color:var(--moss)}
+.arten-hinweis .ah-thumbs{display:flex;flex:none}
+.arten-hinweis .ah-thumb{width:44px;height:44px;border-radius:50%;background:var(--sand);border:2.5px solid white;margin-right:-12px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 4px rgba(0,0,0,.06)}
+.arten-hinweis .ah-thumb:last-child{margin-right:0}
+.arten-hinweis .ah-thumb.more{background:var(--moss);color:white;font-family:'Fraunces',serif;font-weight:500;font-size:14px}
+.arten-hinweis .ah-text{flex:1;min-width:0}
+.arten-hinweis .ah-title{font-family:'Fraunces',serif;font-size:1.15rem;color:var(--ink);font-weight:500;margin-bottom:0.15rem;line-height:1.3}
+.arten-hinweis .ah-title strong{color:var(--moss);font-weight:500}
+.arten-hinweis .ah-sub{font-size:13.5px;color:var(--text-muted);line-height:1.45}
+.arten-hinweis .ah-btn{flex:none;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--moss);color:white;border-radius:8px;font-size:13px;font-weight:500;transition:transform .15s}
+.arten-hinweis a:hover .ah-btn{background:var(--moss-dark)}
+.arten-hinweis a:hover .ah-arr{transform:translateY(2px)}
+.arten-hinweis .ah-arr{transition:transform .2s;display:inline-block}
+@media (max-width:640px){.arten-hinweis a{flex-wrap:wrap;gap:0.9rem}.arten-hinweis .ah-btn{width:100%;justify-content:center}.arten-hinweis .ah-thumbs{order:-1}}
+
+/* ARTEN-SECTION */
+.arten-section{background:linear-gradient(180deg,var(--cream) 0%,var(--sand) 100%)}
+.arten-filter{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:2.5rem}
+.gruppe-chip{background:white;border:0.5px solid var(--border);border-radius:100px;padding:10px 18px;font-size:13px;color:var(--text);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:7px}
+.gruppe-chip:hover{border-color:var(--moss);color:var(--ink)}
+.gruppe-chip.active{background:var(--moss);color:white;border-color:var(--moss);font-weight:500}
+.gruppe-chip .count{font-size:11px;opacity:0.7;margin-left:4px}
+.arten-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
+.art-card{background:white;border-radius:14px;overflow:hidden;border:0.5px solid var(--border);transition:transform .2s,box-shadow .2s;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column}
+.art-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);text-decoration:none}
+.art-card-img-wrap{aspect-ratio:4/3;overflow:hidden;background:var(--sand);position:relative}
+.art-card-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.art-card:hover .art-card-img{transform:scale(1.04)}
+.art-card-status{position:absolute;top:10px;right:10px;background:rgba(26,31,28,.85);color:white;font-size:10.5px;padding:4px 9px;border-radius:4px;font-weight:500;letter-spacing:.3px;backdrop-filter:blur(6px)}
+.art-card-status.streng{background:rgba(184,84,68,.9)}
+.art-card-body{padding:1.1rem 1.25rem 1.25rem;flex:1;display:flex;flex-direction:column}
+.art-card-name{font-family:'Fraunces',serif;font-size:1.15rem;color:var(--ink);margin-bottom:4px;font-weight:500;line-height:1.2}
+.art-card-sci{font-size:12px;color:var(--text-dim);font-style:italic;margin-bottom:0.6rem}
+.art-card-desc{font-size:13px;color:var(--text-muted);line-height:1.5;flex:1}
+.art-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;padding-top:0.8rem;border-top:0.5px solid var(--border)}
+.art-card-gruppe{font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.7px;font-weight:500}
+.art-card-arrow{color:var(--moss);display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500}
+
+/* TABS-ERKLÄRUNG */
+.tabs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.tab-expl{background:white;border-radius:12px;padding:1.75rem;border:0.5px solid var(--border);border-left:3px solid var(--moss)}
+.tab-expl-head{display:flex;align-items:center;gap:12px;margin-bottom:0.75rem}
+.tab-expl-num{font-family:'Fraunces',serif;font-size:1.6rem;color:var(--moss);font-weight:400;line-height:1}
+.tab-expl-title{font-weight:500;font-size:15.5px;color:var(--ink)}
+.tab-expl-body{font-size:14px;color:var(--text-muted);line-height:1.7}
+
+/* CTA-BAND */
+.cta-band{background:linear-gradient(135deg,var(--moss) 0%,var(--moss-dark) 100%);padding:4rem 0;color:white;position:relative;overflow:hidden}
+.cta-band::before{content:"";position:absolute;top:-50%;right:-20%;width:60%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 60%);pointer-events:none}
+.cta-inner{display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;position:relative}
+.cta-inner h2{color:white;font-family:'Fraunces',serif;font-size:2rem;font-weight:400;max-width:600px}
+.cta-inner h2 em{color:var(--clay-soft);font-style:italic}
+.cta-btns{display:flex;gap:12px;flex-wrap:wrap}
+.cta-primary{background:white;color:var(--moss-dark);padding:14px 26px;border-radius:10px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform .15s}
+.cta-primary:hover{transform:translateY(-2px);color:var(--moss-dark);text-decoration:none}
+.cta-secondary{background:rgba(255,255,255,.1);color:white;padding:14px 26px;border-radius:10px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.25);transition:background .15s}
+.cta-secondary:hover{background:rgba(255,255,255,.2);color:white;text-decoration:none}
+
+/* FOOTER */
+footer{background:var(--ink-soft);color:rgba(255,255,255,.7);padding:3rem 0 2rem;font-size:13.5px;line-height:1.7}
+footer .container{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem}
+footer h4{color:white;font-size:13px;font-weight:500;margin-bottom:1rem;letter-spacing:.5px}
+footer a{color:rgba(255,255,255,.7)}
+footer a:hover{color:white}
+footer small{display:block;color:rgba(255,255,255,.4);margin-top:2rem;padding-top:1.5rem;border-top:0.5px solid rgba(255,255,255,.1);grid-column:1/-1;font-size:11.5px}
+
+/* LOADING */
+.loading{text-align:center;padding:2rem;color:var(--text-dim);font-size:14px}
+.skeleton{background:linear-gradient(90deg,var(--sand) 0%,rgba(245,237,224,0.5) 50%,var(--sand) 100%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:14px;aspect-ratio:4/3}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* VORTEILE-SECTION — Ökopunkte, Förderung, QNG */
+.vorteile-section{background:linear-gradient(180deg,var(--cream) 0%,#f0e8d6 100%);position:relative;overflow:hidden;padding:0.5rem 0 2.5rem}
+.vorteile-section .section-head{margin-bottom:1.5rem}
+.vorteile-section::before{content:"";position:absolute;top:0;left:-10%;width:40%;height:100%;background-image:radial-gradient(circle at 30% 40%,rgba(45,90,61,.05) 0%,transparent 60%);pointer-events:none}
+.vorteile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.1rem;position:relative}
+.vorteil-card{background:white;padding:1.5rem 1.4rem 1.4rem;border-radius:14px;border:0.5px solid var(--border);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;text-decoration:none;color:inherit;position:relative;overflow:hidden}
+.vorteil-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);text-decoration:none;color:inherit}
+.vorteil-card::after{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:currentColor;opacity:0.85}
+.vorteil-card.clr-oeko{color:#0f6e56}
+.vorteil-card.clr-kfw{color:#8a5a15}
+.vorteil-card.clr-qng{color:#1e3d28}
+.vorteil-icon{width:40px;height:40px;border-radius:11px;background:currentColor;opacity:0.1}
+.vorteil-icon-wrap{position:relative;width:40px;height:40px;margin-bottom:0.9rem}
+.vorteil-icon-wrap svg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px}
+.vorteil-eyebrow{font-size:10.5px;font-weight:500;letter-spacing:1.1px;text-transform:uppercase;margin-bottom:0.3rem;color:currentColor;opacity:0.85}
+.vorteil-card h3{font-family:'Fraunces',serif;font-size:1.15rem;margin-bottom:0.55rem;color:var(--ink);font-weight:500;line-height:1.25}
+.vorteil-card p{color:var(--text-muted);font-size:13.5px;line-height:1.55;margin-bottom:0.9rem;flex:1}
+.vorteil-card strong{color:var(--ink);font-weight:500}
+.vorteil-highlight{display:inline-flex;align-items:baseline;gap:5px;margin-bottom:0.65rem;padding:0.4rem 0.75rem;background:#faf7f1;border-radius:7px;border:0.5px solid var(--border);font-size:12px;color:var(--text-muted)}
+.vorteil-highlight .num{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:500;color:currentColor;line-height:1}
+.vorteil-link{display:inline-flex;align-items:center;gap:5px;color:currentColor;font-weight:500;font-size:13px;margin-top:auto;padding-top:0.5rem;border-top:0.5px solid var(--border)}
+.vorteil-link .arr{transition:transform .2s}
+.vorteil-card:hover .arr{transform:translateX(4px)}
+
+/* FÖRDERHELD CTA-BLOCK */
+.partner-cta{padding:2.5rem 0;background:var(--ink);color:var(--cream);position:relative;overflow:hidden}
+.partner-cta::before{content:"";position:absolute;top:-50%;right:-10%;width:60%;height:200%;background:radial-gradient(circle,rgba(193,135,48,.15) 0%,transparent 60%);pointer-events:none}
+.partner-inner{display:grid;grid-template-columns:1.3fr 1fr;gap:2.25rem;align-items:center;position:relative}
+@media (max-width:900px){.partner-inner{grid-template-columns:1fr;gap:1.5rem}}
+.partner-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;color:var(--amber);margin-bottom:0.9rem}
+.partner-eyebrow::before{content:"";width:22px;height:1px;background:var(--amber)}
+.partner-cta h2{font-family:'Fraunces',serif;font-size:clamp(1.5rem,3vw,2rem);margin-bottom:0.9rem;color:var(--cream);font-weight:400;line-height:1.2}
+.partner-cta h2 em{font-style:italic;color:var(--amber);font-weight:400}
+.partner-cta p{color:rgba(250,247,241,.7);font-size:14.5px;line-height:1.6;margin-bottom:1.1rem;font-family:'Fraunces',serif;font-weight:300;max-width:520px}
+.partner-features{list-style:none;display:flex;flex-direction:column;gap:0.45rem;margin-bottom:1.35rem;padding:0}
+.partner-features li{display:flex;align-items:center;gap:9px;font-size:13.5px;color:rgba(250,247,241,.85)}
+.partner-features .chk{flex:none;width:18px;height:18px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.partner-features .chk svg{width:11px;height:11px}
+.partner-btn{display:inline-flex;align-items:center;gap:9px;background:var(--amber);color:var(--ink);padding:11px 22px;border-radius:7px;font-weight:500;font-size:14px;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.partner-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(193,135,48,.3);color:var(--ink);text-decoration:none}
+.partner-btn .arr{transition:transform .2s}
+.partner-btn:hover .arr{transform:translateX(4px)}
+.partner-disclaimer{font-size:11.5px;color:rgba(250,247,241,.45);margin-top:0.85rem}
+.partner-visual{background:linear-gradient(135deg,rgba(193,135,48,.18) 0%,rgba(193,135,48,.06) 100%);border:0.5px solid rgba(193,135,48,.25);border-radius:16px;padding:1.5rem;font-family:'Fraunces',serif}
+.partner-stats{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.partner-stat .val{font-size:1.75rem;color:var(--amber);font-weight:500;line-height:1;margin-bottom:0.25rem}
+.partner-stat .lbl{font-size:11.5px;color:rgba(250,247,241,.6);font-family:'Inter',sans-serif;letter-spacing:0.3px}
+.partner-note{margin-top:1.15rem;padding-top:1.15rem;border-top:0.5px solid rgba(193,135,48,.2);font-size:12px;color:rgba(250,247,241,.6);font-family:'Inter',sans-serif;line-height:1.55}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+<div class="nav-inner">
+<div class="brand">
+<div class="brand-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15 8L21 9L17 14L18 21L12 18L6 21L7 14L3 9L9 8L12 2Z"/></svg>
+</div>
+Artenschutz-Atlas
+</div>
+<div class="nav-links">
+<a href="#warum">Grundlagen</a>
+<a href="#arten">Arten</a>
+<a href="#vorteile">Förderung</a>
+<a href="#gemeinde">Gemeindeseite</a>
+<a href="/gemeinde/boeblingen.html">Böblingen</a>
+</div>
+<a href="https://artgerecht-bauen.com" class="nav-cta">Zum Shop →</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+<div class="container">
+<div class="hero-grid">
+<div class="hero-left">
+<div class="hero-eyebrow"><span class="dot"></span> Bundesweit für alle 10.953 Gemeinden</div>
+<h1>Ihr Bauvorhaben trifft<br><em>geschützte Arten</em>.</h1>
+<p class="hero-lead">Was jetzt? Wir zeigen Ihnen für jede Gemeinde in Deutschland, welche Arten betroffen sind, welche Pflichten gelten, welche Förderungen es gibt — und welche Lösungen existieren.</p>
+
+<div class="search-wrap">
+<div class="search-box">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input type="text" class="search-input" id="search" placeholder="PLZ oder Ortsname — z.B. 71032 oder Böblingen" autocomplete="off">
+<button class="search-btn" id="search-btn">Suchen</button>
+</div>
+<div class="search-results" id="search-results"></div>
+<div class="search-example">Beispiele: <button onclick="demoSearch('Böblingen')">Böblingen</button> · <button onclick="demoSearch('70173')">70173 Stuttgart</button> · <button onclick="demoSearch('Schönaich')">Schönaich</button></div>
+</div>
+
+<div class="hero-stats">
+<div class="hero-stat"><div class="val">10.953</div><div class="lb">Gemeinden</div></div>
+<div class="hero-stat"><div class="val">45</div><div class="lb">Arten</div></div>
+<div class="hero-stat"><div class="val">400</div><div class="lb">Kreise</div></div>
+<div class="hero-stat"><div class="val">16</div><div class="lb">Bundesländer</div></div>
+</div>
+</div>
+
+<div class="hero-right">
+<div class="map-card">
+<div class="map-card-head">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+<span>Karte Deutschland</span>
+<span class="map-card-hint" id="map-hint">Bundesland wählen →</span>
+</div>
+<div id="de-map"></div>
+<div class="map-card-foot" id="map-info">Klicken Sie auf ein Bundesland um mehr zu erfahren</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- WARUM -->
+<section class="section" id="warum">
+<div class="container">
+<div class="section-head">
+<div class="section-eyebrow">Warum Artenschutz</div>
+<h2>Drei Gründe, warum Sie das nicht<br><em>ignorieren können</em></h2>
+<p class="section-lead">Artenschutz am Bau ist kein Hobby für Idealisten. Es ist Gesetz, Ökonomie und Risikomanagement zugleich.</p>
+</div>
+<div class="why-grid">
+<div class="why-card">
+<div class="why-icon clr-law">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+</div>
+<h3>Gesetzliche Pflicht</h3>
+<p>Das <strong>§ 44 BNatSchG</strong> verbietet es, Fortpflanzungs- oder Ruhestätten geschützter Arten zu zerstören. Bußgelder bis <strong>50.000 €</strong>, in schweren Fällen bis zu 5 Jahre Freiheitsstrafe. Gilt auch bei „Nicht-Wissen".</p>
+</div>
+<div class="why-card">
+<div class="why-icon clr-nature">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z"/><circle cx="12" cy="10" r="3"/></svg>
+</div>
+<h3>Ökosystem-Wert</h3>
+<p>Arten wie Mauersegler, Fledermaus und Zauneidechse sind <strong>Schädlingsregler</strong> und Bioindikatoren. Ein ökologisch stabiles Siedlungsumfeld ist <strong>klimastabiler, gesünder</strong> und wertet Immobilien langfristig auf.</p>
+</div>
+<div class="why-card">
+<div class="why-icon clr-legal">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+</div>
+<h3>Projektrisiko</h3>
+<p>Nicht entdeckte Arten können ein Projekt <strong>monatelang stoppen</strong> (Stuttgart 21, Juchtenkäfer). Rechtzeitige saP und CEF-Maßnahmen kosten 2–5 % des Projektvolumens — Nachträglicher Stopp ein Vielfaches.</p>
+</div>
+</div>
+<div class="arten-hinweis">
+<a href="#arten">
+<div class="ah-thumbs">
+<div class="ah-thumb">🦅</div>
+<div class="ah-thumb">🦇</div>
+<div class="ah-thumb">🦎</div>
+<div class="ah-thumb">🐸</div>
+<div class="ah-thumb more">+41</div>
+</div>
+<div class="ah-text">
+<div class="ah-title"><strong>45 geschützte Arten</strong> könnten Ihr Bauvorhaben betreffen</div>
+<div class="ah-sub">Mauersegler, Fledermäuse, Zauneidechse, Amphibien und weitere — mit Steckbrief, rechtlicher Einordnung und Lösungen.</div>
+</div>
+<span class="ah-btn">Alle Arten ansehen <span class="ah-arr">↓</span></span>
+</a>
+</div>
+</div>
+</section>
+
+<!-- VORTEILE: Ökopunkte, Förderung, QNG -->
+<section class="section vorteile-section" id="vorteile">
+<div class="container">
+<div class="section-head">
+<div class="section-eyebrow">Ihr Hebel</div>
+<h2>Aus Pflicht wird <em>Vorteil</em></h2>
+<p class="section-lead">Artenschutz kostet zunächst Geld. Doch wer klug plant, holt ein Vielfaches zurück — über Ökopunkte, staatliche Förderung und bessere Finanzierungskonditionen.</p>
+</div>
+<div class="vorteile-grid">
+
+<a href="/oekopunkte.html" class="vorteil-card clr-oeko">
+<div class="vorteil-icon-wrap">
+<div class="vorteil-icon"></div>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+</div>
+<div class="vorteil-eyebrow">Ökopunkte-System</div>
+<h3>Aus der Pflicht wird ein Guthaben</h3>
+<div class="vorteil-highlight"><span class="num">~1,20&nbsp;€</span><span>pro Ökopunkt in BW</span></div>
+<p>Wer ökologisch aufwertet — Nisthilfen, Fassadenbegrünung, Laichgewässer — bekommt <strong>Ökopunkte gutgeschrieben</strong>, verzinst mit 3% p.a. Einfamilienhäuser brauchen typisch 10.000–50.000 Punkte.</p>
+<span class="vorteil-link">So funktioniert's <span class="arr">→</span></span>
+</a>
+
+<a href="/foerderung.html" class="vorteil-card clr-kfw">
+<div class="vorteil-icon-wrap">
+<div class="vorteil-icon"></div>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="7" y1="15" x2="11" y2="15"/></svg>
+</div>
+<div class="vorteil-eyebrow">KfW &amp; BAFA</div>
+<h3>Förderung 2026 — mehr als je zuvor</h3>
+<div class="vorteil-highlight"><span class="num">+50&nbsp;%</span><span>mehr Kredit mit QNG</span></div>
+<p>Die KfW-Programme <strong>297/298 und 300</strong> fördern klimafreundliche Neubauten mit zinsgünstigen Krediten. Mit QNG steigt der Rahmen um 50% — und bis zu 10.000&nbsp;€ Zuschuss pro Wohneinheit.</p>
+<span class="vorteil-link">Alle Programme ansehen <span class="arr">→</span></span>
+</a>
+
+<a href="/qng-siegel.html" class="vorteil-card clr-qng">
+<div class="vorteil-icon-wrap">
+<div class="vorteil-icon"></div>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+</div>
+<div class="vorteil-eyebrow">Qualitätssiegel</div>
+<h3>QNG — das staatliche Gütesiegel</h3>
+<div class="vorteil-highlight"><span class="num">150.000&nbsp;€</span><span>max. KfW-Kredit statt 100.000</span></div>
+<p>Das <strong>Qualitätssiegel Nachhaltiges Gebäude</strong> des Bundes bestätigt Ökologie und Wirtschaftlichkeit. QNG-Berater kosten 5.000–10.000&nbsp;€ — der höhere Förderbetrag gleicht das meist mehr als aus.</p>
+<span class="vorteil-link">QNG-Kriterien verstehen <span class="arr">→</span></span>
+</a>
+
+</div>
+</div>
+</section>
+
+<!-- ARTEN -->
+<section class="section arten-section" id="arten">
+<div class="container">
+<div class="section-head">
+<div class="section-eyebrow">Die 45 Arten</div>
+<h2>Welche Arten könnten bei Ihrem<br><em>Bauvorhaben auftauchen?</em></h2>
+<p class="section-lead">Von Mauersegler bis Juchtenkäfer — klicken Sie auf jede Art für Steckbrief, rechtliche Einordnung und passende Lösungen für Sanierung oder Neubau.</p>
+</div>
+
+<div class="arten-filter" id="arten-filter">
+<button class="gruppe-chip active" data-gruppe="alle">Alle <span class="count" id="count-alle">·</span></button>
+</div>
+
+<div class="arten-grid" id="arten-grid">
+<!-- skeletons während laden -->
+<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+</div>
+</div>
+</section>
+
+<!-- TABS-ERKLÄRUNG -->
+<section class="section" id="gemeinde">
+<div class="container">
+<div class="section-head">
+<div class="section-eyebrow">So funktioniert eine Gemeindeseite</div>
+<h2>Acht Bausteine, von denen jeder<br><em>Ihr Projekt retten kann</em></h2>
+<p class="section-lead">Jede der 10.953 Gemeindeseiten folgt demselben Schema. So finden Sie genau das, was Sie brauchen — ohne lange Suche.</p>
+</div>
+<div class="tabs-grid">
+<div class="tab-expl"><div class="tab-expl-head"><div class="tab-expl-num">I</div><div class="tab-expl-title">Arten</div></div><div class="tab-expl-body">Welche der 45 bundesweit geschützten Arten sind in dieser Gemeinde dokumentiert — gruppiert nach Tiergruppen mit Klick auf jede Karte zum vollständigen Steckbrief.</div></div>
+<div class="tab-expl"><div class="tab-expl-head"><div class="tab-expl-num">II</div><div class="tab-expl-title">Pflichten</div></div><div class="tab-expl-body">Rechtsgrundlage des Bundeslandes, direkter UNB-Kontakt (Untere Naturschutzbehörde) vor Ort, Bußgelder, saP-Anforderungen — die bindenden Vorgaben kompakt.</div></div>
+<div class="tab-expl"><div class="tab-expl-head"><div class="tab-expl-num">III</div><div class="tab-expl-title">Kosten</div></div><div class="tab-expl-body">Ökopunkte-Preise im jeweiligen Bundesland + realistische Kostenrahmen für CEF-Produkte. Trennung von Flächenausgleich und Lebensstätten-Ersatz, transparent.</div></div>
+<div class="tab-expl"><div class="tab-expl-head"><div class="tab-expl-num">IV</div><div class="tab-expl-title">Hilfe</div></div><div class="tab-expl-body">NABU-Ortsgruppe, zuständige Gutachter mit Entfernungsangabe, Landschaftserhaltungsverbände und Kooperationspartner — Ihr Netzwerk für das konkrete Projekt.</div></div>
+<div class="tab-expl"><div class="tab-expl-head"><div class="tab-expl-num">V</div><div class="tab-expl-title">Förderung</div></div><div class="tab-expl-body">KfW, BAFA, BEG — plus Landesprogramme und oft vergessene kommunale Zuschüsse. Struktur pro Gemeinde individuell, weil jede Kommune eigene Programme hat.</div></div>
+<div class="tab-expl"><div class="tab-expl-head"><div class="tab-expl-num">VI</div><div class="tab-expl-title">Tipps</div></div><div class="tab-expl-body">Zeitfenster für Gehölzschnitt, Mauersegler-Check vor WDVS, Fledermaus-Detektor im Juli — praktische Handlungsempfehlungen nach Bauvorhaben.</div></div>
+<div class="tab-expl"><div class="tab-expl-head"><div class="tab-expl-num">VII</div><div class="tab-expl-title">Wissen</div></div><div class="tab-expl-body">Vertiefende Artikel zu CEF vs. Ökopunkte, saP-Verfahren Schritt für Schritt, Dachsanierung & Artenschutz — für wen es tiefer reinlesen mag.</div></div>
+<div class="tab-expl"><div class="tab-expl-head"><div class="tab-expl-num">VIII</div><div class="tab-expl-title">Shop</div></div><div class="tab-expl-body">Passende CEF-konforme Nisthilfen, Niststeine, Fledermaus-Quartiere — die konkreten Produktlösungen für die in dieser Gemeinde relevanten Arten.</div></div>
+</div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+<div class="container cta-inner">
+<h2>Sehen Sie's in Aktion —<br><em>Musterseite Böblingen</em></h2>
+<div class="cta-btns">
+<a href="/gemeinde/boeblingen.html" class="cta-primary">Musterseite ansehen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+<a href="https://artgerecht-bauen.com" class="cta-secondary">Zum Shop</a>
+</div>
+</div>
+</section>
+
+<!-- FÖRDERHELD PARTNER-CTA -->
+<section class="partner-cta" id="foerderberatung">
+<div class="container">
+<div class="partner-inner">
+
+<div>
+<div class="partner-eyebrow">Kostenlose Förderberatung</div>
+<h2>Sie wissen nicht, welche Förderung Ihnen zusteht?<br><em>Unser Partner hilft.</em></h2>
+<p>Fördermittel sind komplex: Bund, Länder, Kommunen, KfW, BAFA — über 2.500 Programme allein in Deutschland. <strong>Förderheld.com</strong> ist spezialisiert auf die Kombination und Beantragung staatlicher Fördergelder für Bau- und Sanierungsvorhaben.</p>
+
+<ul class="partner-features">
+<li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>100% kostenloser Check — keine versteckten Kosten</li>
+<li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Übernahme des gesamten Antragsprozesses bis zur Auszahlung</li>
+<li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Spezialisiert auf BEG, KfW, BAFA — inkl. QNG-Kombination</li>
+<li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Immer aktueller Stand bei Förderänderungen 2026</li>
+</ul>
+
+<a href="https://xn--frderheld-07a.com/" target="_blank" rel="noopener" class="partner-btn">
+Zu Förderheld.com <span class="arr">→</span>
+</a>
+<p class="partner-disclaimer">Externer Partner, öffnet in neuem Tab. Die Beratung erfolgt direkt zwischen Ihnen und Förderheld.</p>
+</div>
+
+<div class="partner-visual">
+<div class="partner-stats">
+<div class="partner-stat">
+<div class="val">2.500+</div>
+<div class="lbl">Förderprogramme in DE</div>
+</div>
+<div class="partner-stat">
+<div class="val">bis 270k&nbsp;€</div>
+<div class="lbl">KfW-Kredit pro WE</div>
+</div>
+<div class="partner-stat">
+<div class="val">~7,5&nbsp;%</div>
+<div class="lbl">Zuschuss Programm 55</div>
+</div>
+<div class="partner-stat">
+<div class="val">0&nbsp;€</div>
+<div class="lbl">Beratung für Sie</div>
+</div>
+</div>
+<div class="partner-note">
+Die Zahlen basieren auf KfW/BAFA-Programmen 2026. Individuelle Förderfähigkeit prüft Förderheld persönlich auf Ihr Vorhaben.
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+<div class="container">
+<div>
+<h4>Artenschutz-Atlas</h4>
+<p style="font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.7;">Bundesweiter Leitfaden für Bauherren, Architekten und Energieberater. Alle Kommunen Deutschlands auf einen Blick.</p>
+</div>
+<div>
+<h4>Rechtliches</h4>
+<p><a href="#">Impressum</a></p>
+<p><a href="#">Datenschutz</a></p>
+<p><a href="#">Datenquellen & Lizenzen</a></p>
+</div>
+<div>
+<h4>Daten-Quellen</h4>
+<p style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.65;">Schutzgebiete: <a href="https://geodienste.bfn.de" target="_blank" rel="noopener">BfN WMS</a> · Arten: <a href="https://inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> (CC-BY) · Gemeinden: Destatis · Karten © OSM</p>
+<p style="font-size:11px;color:rgba(255,255,255,.35);margin-top:8px;">Nutzung gemäß GeoNutzV und dl-de/by-2-0.</p>
+</div>
+<div>
+<h4>Projekt</h4>
+<p><a href="https://artgerecht-bauen.com">artgerecht-bauen.com</a></p>
+<p style="color:rgba(255,255,255,.5);font-size:12px;">Haus und Sicherheit GmbH · Schönaich</p>
+</div>
+<small>Stand 18.04.2026 · Dieser Atlas ersetzt keine saP und keine Rechtsberatung · Alle Angaben ohne Gewähr</small>
+</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var API = 'https://wsubvpdyakzpnapgsrnm.supabase.co/functions/v1/atlas-public-data';
+var GRUPPEN = {
+  gebaeudebrueter: {label:'Gebäudebrüter', icon:'🏠'},
+  fledermaus:      {label:'Fledermäuse', icon:'🦇'},
+  eule:            {label:'Eulen', icon:'🦉'},
+  gartenvogel:     {label:'Gartenvögel', icon:'🐦'},
+  saeugetier:      {label:'Säugetiere', icon:'🐿️'},
+  reptil:          {label:'Reptilien', icon:'🦎'},
+  amphibie:        {label:'Amphibien', icon:'🐸'},
+  insekt:          {label:'Insekten', icon:'🐝'}
+};
+
+var allArten = [];
+var currentFilter = 'alle';
+
+// === ARTEN LADEN ===
+fetch(API + '/arten').then(function(r){return r.json();}).then(function(d){
+  allArten = d.arten || [];
+  renderFilter();
+  renderArten();
+}).catch(function(e){
+  document.getElementById('arten-grid').innerHTML = '<div class="loading">Fehler beim Laden der Arten. Bitte Seite neu laden.</div>';
+});
+
+function renderFilter(){
+  var counts = {alle: allArten.length};
+  allArten.forEach(function(a){counts[a.artengruppe] = (counts[a.artengruppe]||0)+1;});
+  var filter = document.getElementById('arten-filter');
+  document.getElementById('count-alle').textContent = '('+counts.alle+')';
+  Object.keys(GRUPPEN).forEach(function(key){
+    if(!counts[key]) return;
+    var g = GRUPPEN[key];
+    var btn = document.createElement('button');
+    btn.className = 'gruppe-chip';
+    btn.setAttribute('data-gruppe', key);
+    btn.innerHTML = g.icon + ' ' + g.label + ' <span class="count">('+counts[key]+')</span>';
+    btn.addEventListener('click', function(){
+      currentFilter = key;
+      document.querySelectorAll('.gruppe-chip').forEach(function(c){c.classList.remove('active');});
+      btn.classList.add('active');
+      renderArten();
+    });
+    filter.appendChild(btn);
+  });
+  // Alle-Button zurücksetzen
+  document.querySelector('.gruppe-chip[data-gruppe="alle"]').addEventListener('click', function(){
+    currentFilter = 'alle';
+    document.querySelectorAll('.gruppe-chip').forEach(function(c){c.classList.remove('active');});
+    this.classList.add('active');
+    renderArten();
+  });
+}
+
+function renderArten(){
+  var grid = document.getElementById('arten-grid');
+  var filtered = currentFilter === 'alle' ? allArten : allArten.filter(function(a){return a.artengruppe === currentFilter;});
+  if(filtered.length === 0){
+    grid.innerHTML = '<div class="loading">Keine Arten in dieser Gruppe.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(function(a){
+    var gruppe = GRUPPEN[a.artengruppe] || {label:a.artengruppe, icon:''};
+    var status = a.schutzstatus === 'streng' ? 'STRENG' : 'BESONDERS';
+    var statusClass = a.schutzstatus === 'streng' ? 'streng' : '';
+    return '<a href="/arten/'+a.slug+'.html" class="art-card">' +
+      '<div class="art-card-img-wrap">' +
+        (a.foto_url ? '<img class="art-card-img" src="'+a.foto_url+'" alt="'+a.name_deutsch+'" loading="lazy">' : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;">'+gruppe.icon+'</div>') +
+        '<div class="art-card-status '+statusClass+'">'+status+'</div>' +
+      '</div>' +
+      '<div class="art-card-body">' +
+        '<div class="art-card-name">'+a.name_deutsch+'</div>' +
+        '<div class="art-card-sci">'+(a.name_wissenschaftlich||'')+'</div>' +
+        '<div class="art-card-desc">'+(a.beschreibung_kurz||'')+'</div>' +
+        '<div class="art-card-foot">' +
+          '<div class="art-card-gruppe">'+gruppe.icon+' '+gruppe.label+'</div>' +
+          '<div class="art-card-arrow">Steckbrief →</div>' +
+        '</div>' +
+      '</div>' +
+    '</a>';
+  }).join('');
+}
+
+// === SUCHE ===
+var searchTimeout = null;
+var searchInput = document.getElementById('search');
+var searchResults = document.getElementById('search-results');
+
+searchInput.addEventListener('input', function(){
+  clearTimeout(searchTimeout);
+  var q = this.value.trim();
+  if(q.length < 2){
+    searchResults.classList.remove('open');
+    searchResults.innerHTML = '';
+    return;
+  }
+  searchTimeout = setTimeout(function(){ doSearch(q); }, 200);
+});
+searchInput.addEventListener('focus', function(){
+  if(searchResults.innerHTML) searchResults.classList.add('open');
+});
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.search-wrap')) searchResults.classList.remove('open');
+});
+
+function doSearch(q){
+  fetch(API + '/suche?q=' + encodeURIComponent(q))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var treffer = d.treffer || [];
+      if(treffer.length === 0){
+        searchResults.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:13.5px;">Keine Treffer für „'+q+'". Versuchen Sie eine andere Schreibweise.</div>';
+      }else{
+        searchResults.innerHTML = treffer.map(function(t){
+          return '<div class="search-result" data-ags="'+t.ags+'" onclick="goToGemeinde(\''+t.ags+'\', \''+(t.name||'').replace(/'/g,'')+'\')">' +
+            '<div class="plz">'+(t.plz||'—')+'</div>' +
+            '<div class="name">'+t.name+'</div>' +
+            '<div class="einwohner">'+(t.einwohner ? t.einwohner.toLocaleString('de-DE')+' EW' : '')+'</div>' +
+          '</div>';
+        }).join('');
+      }
+      searchResults.classList.add('open');
+    });
+}
+
+function goToGemeinde(ags, name){
+  // Vorerst: alle → Musterseite Böblingen (bis wir mehr haben)
+  var lower = (name||'').toLowerCase();
+  if(lower.indexOf('böblingen') >= 0 || lower.indexOf('boeblingen') >= 0){
+    window.location.href = '/gemeinde/boeblingen.html';
+  }else{
+    // Platzhalter: derzeit nur Böblingen als Musterseite
+    alert('Bislang ist nur die Musterseite Böblingen ausgebaut. Die anderen 10.952 Gemeinden folgen nach und nach.\n\nSie werden zur Musterseite weitergeleitet, damit Sie die Struktur sehen.');
+    window.location.href = '/gemeinde/boeblingen.html';
+  }
+}
+
+function demoSearch(q){
+  searchInput.value = q;
+  searchInput.dispatchEvent(new Event('input'));
+  searchInput.focus();
+}
+
+document.getElementById('search-btn').addEventListener('click', function(){
+  var q = searchInput.value.trim();
+  if(q) doSearch(q);
+});
+
+searchInput.addEventListener('keydown', function(e){
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    var first = searchResults.querySelector('.search-result');
+    if(first) first.click();
+  }
+});
+
+// === DEUTSCHLANDKARTE ===
+(function initDeMap(){
+  function log(msg){try{console.log('[Atlas-DE-Map]',msg);}catch(e){}}
+  if(typeof L === 'undefined'){log('Leaflet not loaded');return;}
+  
+  var mapEl = document.getElementById('de-map');
+  if(!mapEl){log('#de-map not found');return;}
+  
+  // Leaflet-Karte ohne Tile-Layer - reine GeoJSON
+  var map = L.map(mapEl, {
+    center: [51.3, 10.3],
+    zoom: 5,
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: false,
+    dragging: true
+  });
+  
+  // Sehr helle Basemap (CartoDB Positron - sauberes Aussehen)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    maxZoom: 10,
+    opacity: 0.5
+  }).addTo(map);
+  
+  // Farb-Palette für Bundesländer (aus unserer Designwelt)
+  var BL_COLORS = {
+    'DE-BW':'#2d5a3d','DE-BY':'#4a7d5a','DE-BE':'#b85444','DE-BB':'#6d8b3f',
+    'DE-HB':'#c18730','DE-HH':'#a85b3a','DE-HE':'#597755','DE-MV':'#3e6b7a',
+    'DE-NI':'#6e5536','DE-NW':'#8a5a2a','DE-RP':'#4d7558','DE-SL':'#9a6540',
+    'DE-SN':'#556b2f','DE-ST':'#7b5436','DE-SH':'#4a7288','DE-TH':'#6a6535'
+  };
+  
+  var geoLayer = null;
+  var selectedLayer = null;
+  
+  function style(feature){
+    var id = feature.properties.id;
+    return {
+      fillColor: BL_COLORS[id] || '#5d7a5a',
+      weight: 1.2,
+      opacity: 1,
+      color: 'white',
+      fillOpacity: 0.55
+    };
+  }
+  
+  function highlightStyle(){
+    return {
+      weight: 3,
+      color: '#1a1f1c',
+      fillOpacity: 0.82
+    };
+  }
+  
+  function resetStyle(){
+    return {weight: 1.2, color: 'white', fillOpacity: 0.55};
+  }
+  
+  function onMouseover(e){
+    var layer = e.target;
+    if(layer !== selectedLayer){
+      layer.setStyle(highlightStyle());
+      layer.bringToFront();
+    }
+  }
+  
+  function onMouseout(e){
+    var layer = e.target;
+    if(layer !== selectedLayer){
+      layer.setStyle(resetStyle());
+    }
+  }
+  
+  function onClick(e){
+    var layer = e.target;
+    var p = layer.feature.properties;
+    
+    // Vorherige Auswahl zurücksetzen
+    if(selectedLayer && selectedLayer !== layer){
+      selectedLayer.setStyle(resetStyle());
+    }
+    selectedLayer = layer;
+    layer.setStyle({weight: 3.5, color: '#b85444', fillOpacity: 0.82});
+    
+    // Zoom auf das BL
+    map.fitBounds(layer.getBounds(), {padding: [20,20], maxZoom: 7});
+    
+    // Info unten füllen
+    var info = document.getElementById('map-info');
+    var hint = document.getElementById('map-hint');
+    if(hint) hint.textContent = p.name;
+    if(info){
+      info.innerHTML = '<strong>' + p.name + '</strong> &middot; Geben Sie oben eine PLZ oder einen Ortsnamen ein, um direkt zu einer Gemeinde zu gelangen. ' +
+        '<a href="#arten">Alle Arten ansehen →</a>';
+    }
+    
+    // Scroll zum Suchfeld für Mobile
+    if(window.innerWidth < 960){
+      document.getElementById('search').focus();
+      document.querySelector('.search-wrap').scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  }
+  
+  function onEach(feature, layer){
+    layer.on({mouseover: onMouseover, mouseout: onMouseout, click: onClick});
+    layer.bindTooltip(feature.properties.name, {
+      sticky: true,
+      className: 'de-map-tooltip',
+      direction: 'top'
+    });
+  }
+  
+  // GeoJSON laden - niedrige Auflösung (99 KB, ausreichend)
+  var GEO_URL = 'https://cdn.jsdelivr.net/gh/isellsoap/deutschlandGeoJSON@main/2_bundeslaender/4_niedrig.geo.json';
+  fetch(GEO_URL)
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(geo){
+      log('GeoJSON loaded: ' + geo.features.length + ' features');
+      geoLayer = L.geoJSON(geo, {style: style, onEachFeature: onEach}).addTo(map);
+      map.fitBounds(geoLayer.getBounds(), {padding: [10,10]});
+    })
+    .catch(function(err){
+      log('GeoJSON error: ' + err);
+      var info = document.getElementById('map-info');
+      if(info) info.innerHTML = '<span style="color:var(--clay);">Karte konnte nicht geladen werden. Nutzen Sie das Suchfeld.</span>';
+    });
+})();
+</script>
+</body>
+</html>

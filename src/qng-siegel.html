@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QNG-Siegel verstehen — Artenschutz-Atlas</title>
+<meta name="description" content="Das Qualitätssiegel Nachhaltiges Gebäude (QNG) des Bundes: PLUS und PREMIUM, Kriterien, Kosten, Voraussetzungen, und warum es die KfW-Förderung um 50% erhöht.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --moss:#2d5a3d; --moss-dark:#1e3d28; --moss-light:#4a7d5a;
+  --sand:#f5ede0; --sand-warm:#ebe0cd; --cream:#faf7f1;
+  --clay:#b85444; --clay-soft:#d4a390;
+  --amber:#c18730;
+  --ink:#1a1f1c; --ink-soft:#2c3530;
+  --text:#3d4440; --text-muted:#6b7470; --text-dim:#8a928d;
+  --border:rgba(45,90,61,.12); --border-strong:rgba(45,90,61,.25);
+  --shadow:0 1px 2px rgba(30,61,40,.04), 0 4px 12px rgba(30,61,40,.05);
+  --shadow-lg:0 4px 8px rgba(30,61,40,.06), 0 16px 32px rgba(30,61,40,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{color:var(--ink);font-weight:500;letter-spacing:-0.01em;line-height:1.25}
+h1{font-family:'Fraunces',Georgia,serif;font-weight:400;letter-spacing:-0.02em}
+a{color:var(--moss);text-decoration:none;transition:color .15s}
+a:hover{color:var(--moss-dark);text-decoration:underline;text-underline-offset:3px}
+.container{max-width:960px;margin:0 auto;padding:0 2rem}
+
+/* NAV */
+.nav{background:rgba(250,247,241,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:50}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;max-width:1320px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:18px;color:var(--ink);font-weight:500}
+.brand-icon{width:28px;height:28px;background:var(--moss);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px}
+.nav-links{display:flex;gap:1.75rem;font-size:14px}
+.nav-links a{color:var(--text)}
+.nav-cta{background:var(--moss);color:white;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500}
+.nav-cta:hover{background:var(--moss-dark);color:white;text-decoration:none}
+@media (max-width:720px){.nav-links{display:none}}
+
+/* HERO */
+.page-hero{padding:4rem 0 3rem;background:linear-gradient(180deg,var(--cream) 0%,#e6ede8 100%);border-bottom:0.5px solid var(--border)}
+.crumbs{font-size:13px;color:var(--text-muted);margin-bottom:1.25rem}
+.crumbs a{color:var(--text-muted);text-decoration:none}
+.crumbs a:hover{color:var(--moss);text-decoration:underline}
+.eyebrow{display:inline-block;font-size:11px;font-weight:500;color:var(--ink);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1rem;padding:6px 14px;background:white;border-radius:100px;border:0.5px solid var(--border)}
+.page-hero h1{font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.05;margin-bottom:1.25rem;color:var(--ink)}
+.page-hero h1 em{font-style:italic;color:var(--moss);font-weight:400}
+.page-lead{font-size:19px;line-height:1.55;color:var(--text-muted);font-family:'Fraunces',serif;font-weight:300;max-width:680px}
+
+/* CONTENT */
+.section{padding:3.5rem 0}
+.section-alt{background:white;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
+.content h2{font-family:'Fraunces',serif;font-size:clamp(1.6rem,3vw,2.1rem);margin-bottom:1rem;color:var(--ink);font-weight:500;line-height:1.2}
+.content h3{font-family:'Fraunces',serif;font-size:1.3rem;margin-top:2rem;margin-bottom:0.75rem;color:var(--ink);font-weight:500}
+.content p{margin-bottom:1rem;color:var(--text);font-size:16px;line-height:1.7}
+.content p:last-child{margin-bottom:0}
+.content ul{margin:1rem 0 1rem 1.5rem;color:var(--text);line-height:1.8}
+.content ul li{margin-bottom:0.35rem}
+.content strong{color:var(--ink);font-weight:500}
+
+/* BADGE-COMPARISON */
+.badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
+@media (max-width:640px){.badge-grid{grid-template-columns:1fr}}
+.badge-card{background:white;border:0.5px solid var(--border);border-radius:14px;padding:2rem;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.badge-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:currentColor}
+.badge-card.plus{color:var(--moss)}
+.badge-card.premium{color:var(--moss-dark)}
+.badge-seal{width:80px;height:80px;margin:0 auto 1rem;border-radius:50%;background:currentColor;color:white;display:flex;align-items:center;justify-content:center;position:relative}
+.badge-seal svg{width:36px;height:36px}
+.badge-seal::after{content:"";position:absolute;top:-6px;left:-6px;right:-6px;bottom:-6px;border:2px solid currentColor;border-radius:50%;opacity:0.3}
+.badge-card h3{font-family:'Fraunces',serif;font-size:1.6rem !important;color:currentColor !important;margin-top:0 !important;margin-bottom:0.3rem !important}
+.badge-level{font-size:11px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:1rem}
+.badge-card p{font-size:14.5px;color:var(--text);line-height:1.65;text-align:left}
+.badge-props{list-style:none;margin:1rem 0 0;padding:0;text-align:left}
+.badge-props li{font-size:13.5px;color:var(--text-muted);padding:0.4rem 0;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:8px}
+.badge-props li:last-child{border-bottom:none}
+.badge-props .chk{flex:none;width:16px;height:16px;border-radius:50%;background:currentColor;color:white;display:flex;align-items:center;justify-content:center}
+.badge-props .chk svg{width:10px;height:10px}
+
+/* KRITERIEN */
+.krit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin:2rem 0}
+.krit-card{background:white;padding:1.5rem;border-radius:12px;border:0.5px solid var(--border)}
+.krit-icon{width:44px;height:44px;border-radius:10px;background:var(--sand);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;color:var(--moss)}
+.krit-icon svg{width:22px;height:22px}
+.krit-card h3{font-family:'Fraunces',serif;font-size:1.15rem !important;margin:0 0 0.5rem !important;color:var(--ink)}
+.krit-card p{font-size:14px;color:var(--text-muted);margin:0;line-height:1.6}
+
+/* COST-BREAKDOWN */
+.cost-breakdown{background:white;border:0.5px solid var(--border);border-radius:14px;overflow:hidden;margin:2rem 0}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:0.5px solid var(--border);font-size:15px}
+.cost-row:last-child{border-bottom:none;background:var(--sand);font-weight:500}
+.cost-row .label{color:var(--text)}
+.cost-row .val{font-family:'Fraunces',serif;color:var(--ink);font-weight:500}
+.cost-row.benefit{background:#f0f7f3;color:var(--moss)}
+.cost-row.benefit .val{color:var(--moss);font-size:1.05rem}
+
+/* RULE-BOX */
+.rule-box{background:linear-gradient(135deg,#e9f4ee 0%,#f5ede0 100%);border:0.5px solid var(--border);border-left:3px solid var(--moss);border-radius:10px;padding:1.5rem 1.75rem;margin:1.75rem 0}
+.rule-box h3{margin-top:0 !important;color:var(--moss) !important;font-size:1.1rem !important}
+.rule-box p{font-size:14.5px;color:var(--text);margin-bottom:0.5rem}
+.rule-box p:last-child{margin-bottom:0}
+
+/* STEPS */
+.steps{counter-reset:step;margin:1.5rem 0}
+.step{position:relative;padding:1.25rem 1.5rem 1.25rem 4rem;background:white;border:0.5px solid var(--border);border-radius:12px;margin-bottom:0.75rem;counter-increment:step}
+.step::before{content:counter(step);position:absolute;left:1.25rem;top:1.25rem;width:32px;height:32px;background:var(--moss);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:500;font-size:14px}
+.step h3{margin:0 0 0.3rem !important;font-size:1.05rem !important;color:var(--ink)}
+.step p{font-size:14px;color:var(--text-muted);margin:0;line-height:1.6}
+
+/* CTA */
+.cta-band{background:var(--ink);color:var(--cream);padding:3.5rem 0}
+.cta-inner{text-align:center;max-width:600px;margin:0 auto}
+.cta-inner h2{color:var(--cream);margin-bottom:1rem;font-family:'Fraunces',serif;font-size:2rem;font-weight:400}
+.cta-inner p{color:rgba(250,247,241,.75);margin-bottom:1.75rem;font-size:16px}
+.cta-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:8px;font-weight:500;font-size:15px;text-decoration:none;transition:transform .15s}
+.cta-btn.primary{background:var(--amber);color:var(--ink)}
+.cta-btn.primary:hover{transform:translateY(-2px);color:var(--ink);text-decoration:none}
+.cta-btn.secondary{background:transparent;color:var(--cream);border:1px solid rgba(250,247,241,.3)}
+.cta-btn.secondary:hover{background:rgba(250,247,241,.08);color:var(--cream);text-decoration:none}
+
+/* HERO-LAYOUT 2 SPALTEN + QNG-SIEGEL */
+.hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:3rem;align-items:center}
+@media (max-width:820px){.hero-grid{grid-template-columns:1fr;gap:2rem}}
+.hero-text{min-width:0}
+.hero-seal{display:flex;justify-content:center;align-items:center;min-width:0}
+.qng-seal-visual{width:min(280px,85%);aspect-ratio:1/1;position:relative;filter:drop-shadow(0 8px 24px rgba(45,90,61,.18))}
+.qng-seal-visual svg{width:100%;height:100%;display:block}
+.seal-caption{text-align:center;margin-top:1rem;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:500}
+
+/* FACT-STRIP — große Zahl über dem Video */
+.fact-strip{background:white;border:0.5px solid var(--border);border-radius:14px;padding:1.5rem 2rem;margin:0 0 2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;box-shadow:var(--shadow)}
+@media (max-width:640px){.fact-strip{grid-template-columns:1fr;gap:1rem;padding:1.25rem 1.5rem}}
+.fact-item{text-align:center}
+.fact-item:not(:last-child){border-right:0.5px solid var(--border)}
+@media (max-width:640px){.fact-item:not(:last-child){border-right:none;border-bottom:0.5px solid var(--border);padding-bottom:1rem}}
+.fact-num{font-family:'Fraunces',serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--moss);font-weight:500;line-height:1}
+.fact-label{font-size:12.5px;color:var(--text-muted);margin-top:0.4rem;letter-spacing:0.3px}
+
+/* VIDEO-EMBED */
+.video-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;box-shadow:var(--shadow-lg);background:#000}
+.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-caption{font-size:13px;color:var(--text-muted);text-align:center;margin-top:0.85rem}
+.video-caption a{color:var(--text-muted);text-decoration:underline;text-decoration-color:var(--border-strong);text-underline-offset:2px}
+
+/* FOOTER */
+.footer{background:var(--sand);padding:2.5rem 0;border-top:0.5px solid var(--border)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;max-width:1320px;margin:0 auto;padding:0 2rem}
+@media (max-width:720px){.footer-grid{grid-template-columns:1fr 1fr;gap:1.5rem}}
+.footer-brand{font-family:'Fraunces',serif;font-size:18px;color:var(--ink);margin-bottom:0.75rem}
+.footer p{font-size:13px;color:var(--text-muted);line-height:1.65;margin-bottom:0.35rem}
+.footer h4{font-family:'Inter',sans-serif;font-size:12px;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem;font-weight:500}
+.footer a{color:var(--text-muted);font-size:13px}
+.footer-bottom{max-width:1320px;margin:2rem auto 0;padding:1.5rem 2rem 0;border-top:0.5px solid var(--border);font-size:12px;color:var(--text-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+<div class="nav-inner">
+<a href="/" class="brand">
+<div class="brand-icon">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+</div>
+Artenschutz-Atlas
+</a>
+<div class="nav-links">
+<a href="/#warum">Grundlagen</a>
+<a href="/#arten">Arten</a>
+<a href="/#vorteile">Förderung</a>
+<a href="/#gemeinde">Gemeindeseite</a>
+</div>
+<a href="/#foerderberatung" class="nav-cta">Kostenlose Beratung</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<header class="page-hero">
+<div class="container">
+<div class="crumbs"><a href="/">Atlas</a> → <a href="/#vorteile">Vorteile</a> → QNG-Siegel</div>
+<div class="hero-grid">
+<div class="hero-text">
+<div class="eyebrow">Qualitätssiegel Nachhaltiges Gebäude</div>
+<h1>Das staatliche Siegel für <em>nachhaltige Gebäude</em></h1>
+<p class="page-lead">Das QNG ist das offizielle Gütesiegel des Bundes für nachhaltige Gebäude. Es ist seit 2022 Voraussetzung für die attraktivsten KfW-Förderungen — und hebt den Kreditrahmen um bis zu 50 % an.</p>
+</div>
+<div class="hero-seal">
+<div>
+<div class="qng-seal-visual" role="img" aria-label="QNG-Siegel – Qualitätssiegel Nachhaltiges Gebäude PLUS">
+<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="sealBg" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#3a6d4b"/>
+<stop offset="1" stop-color="#1e3d28"/>
+</linearGradient>
+<linearGradient id="sealRing" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#c18730"/>
+<stop offset="1" stop-color="#8c5f1d"/>
+</linearGradient>
+</defs>
+<!-- Äußerer achteckiger Ring (angelehnt an das offizielle QNG-Siegel) -->
+<polygon points="110,6 164,28 206,70 206,150 164,192 110,214 56,192 14,150 14,70 56,28"
+  fill="url(#sealBg)" stroke="url(#sealRing)" stroke-width="4"/>
+<!-- Innere dünne Rahmenlinie -->
+<polygon points="110,20 156,40 192,76 192,144 156,180 110,200 64,180 28,144 28,76 64,40"
+  fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+<!-- Top-Label -->
+<text x="110" y="58" text-anchor="middle" fill="rgba(255,255,255,0.78)"
+  font-family="Inter,Arial,sans-serif" font-size="9.5" letter-spacing="2.5" font-weight="500">
+BMWSB · NACHHALTIG
+</text>
+<!-- QNG Hauptschrift -->
+<text x="110" y="115" text-anchor="middle" fill="#ffffff"
+  font-family="'Fraunces',Georgia,serif" font-size="56" font-weight="500" letter-spacing="2">
+QNG
+</text>
+<!-- Trennlinie -->
+<line x1="68" y1="130" x2="152" y2="130" stroke="rgba(255,255,255,0.3)" stroke-width="0.8"/>
+<!-- Level-Badge -->
+<rect x="68" y="140" width="84" height="26" rx="3" fill="#c18730"/>
+<text x="110" y="158" text-anchor="middle" fill="#1a1f1c"
+  font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" letter-spacing="4">
+PLUS
+</text>
+<!-- Bottom-Label -->
+<text x="110" y="184" text-anchor="middle" fill="rgba(255,255,255,0.65)"
+  font-family="Inter,Arial,sans-serif" font-size="8" letter-spacing="2">
+QUALITÄTSSIEGEL GEBÄUDE
+</text>
+</svg>
+</div>
+<div class="seal-caption">Siegel-Variante · QNG-PLUS</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+<!-- VIDEO + FAKTEN -->
+<section class="section section-alt">
+<div class="container content">
+<h2>QNG in 4 Minuten erklärt</h2>
+<p>Warum das QNG für private Bauherren jetzt relevant ist, wo der Hebel bei der KfW-Förderung liegt und welche Baustandards wirklich dahinterstecken — kompakt und vom Sachverständigen.</p>
+
+<div class="fact-strip" style="margin-top:1.75rem">
+<div class="fact-item">
+<div class="fact-num">+50 %</div>
+<div class="fact-label">Kreditrahmen bei KfW 297/298</div>
+</div>
+<div class="fact-item">
+<div class="fact-num">+100.000 €</div>
+<div class="fact-label">Kredit-Bonus bei KfW 300 (Familien)</div>
+</div>
+<div class="fact-item">
+<div class="fact-num">2 Stufen</div>
+<div class="fact-label">QNG-PLUS und QNG-PREMIUM</div>
+</div>
+</div>
+
+<div class="video-wrap">
+<iframe src="https://www.youtube-nocookie.com/embed/_rhFvSXmO2I?rel=0&modestbranding=1"
+  title="QNG-Zertifizierung einfach erklärt"
+  loading="lazy"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</div>
+<p class="video-caption">Quelle: <a href="https://www.youtube.com/watch?v=_rhFvSXmO2I" target="_blank" rel="noopener">YouTube · WeberHaus — Dr. Jonas Krohn erklärt die QNG-Zertifizierung</a></p>
+</div>
+</section>
+
+<!-- KOSTEN -->
+<section class="section">
+<div class="container content">
+<h2>Was kostet das QNG?</h2>
+<p>Die Zertifizierung erfordert die Begleitung durch einen <strong>registrierten QNG-Berater</strong>. Dessen Arbeit muss vor Bauantrag beginnen und bis zur Fertigstellung laufen.</p>
+
+<div class="cost-breakdown">
+<div class="cost-row"><span class="label">QNG-Berater (Grundleistung PLUS)</span><span class="val">5.000–8.000 €</span></div>
+<div class="cost-row"><span class="label">Zertifizierungsgebühr beim Siegel-Issuer</span><span class="val">500–1.500 €</span></div>
+<div class="cost-row"><span class="label">Nachweise, Ökobilanzen, Messungen</span><span class="val">500–2.000 €</span></div>
+<div class="cost-row"><span class="label">Typische Gesamtkosten QNG-PLUS</span><span class="val">~6.000–11.500 €</span></div>
+<div class="cost-row benefit"><span class="label">Erhöhter KfW-Kreditrahmen durch QNG</span><span class="val">+50.000 € – 100.000 €</span></div>
+</div>
+
+<p>Die <strong>wirtschaftliche Rechnung ist eindeutig</strong>: Die Mehrkosten für QNG werden durch den höheren Kreditrahmen und die günstigeren Zinsen in den allermeisten Fällen mehr als ausgeglichen. Bei Familien mit KfW 300 liegt der Kredit-Bonus sogar bei 100.000 €.</p>
+
+<p style="font-size:14.5px;color:var(--text-muted);margin-top:1rem;">Wichtig: QNG erfordert meist auch Mehrinvestitionen in <strong>hochwertigere Baustoffe, bessere Dämmung, Ökobilanz-optimierte Materialien</strong>. Diese Mehrkosten sind nicht in der obigen Tabelle — Ihr QNG-Berater kann die Gesamt-Mehraufwendungen abschätzen und mit der Förderersparnis gegenrechnen.</p>
+</div>
+</section>
+
+<!-- WIE BEKOMMT MAN ES -->
+<section class="section section-alt">
+<div class="container content">
+<h2>Der Weg zum QNG — Schritt für Schritt</h2>
+
+<div class="steps">
+<div class="step">
+<h3>QNG-Berater finden</h3>
+<p>Nur vom BMWSB registrierte Berater dürfen QNG ausstellen. Liste verfügbar unter nachhaltigesbauen.de.</p>
+</div>
+<div class="step">
+<h3>Vorprüfung und Zielvereinbarung</h3>
+<p>Berater prüft Ihr Projekt auf QNG-Eignung, empfiehlt PLUS oder PREMIUM und erstellt eine Zielvereinbarung.</p>
+</div>
+<div class="step">
+<h3>Planung QNG-konform ausrichten</h3>
+<p>Architekt und Berater stimmen sich ab: Baustoffe, Ökobilanz, Barrierefreiheit, Energietechnik. QNG-Anforderungen fließen in die Planung ein.</p>
+</div>
+<div class="step">
+<h3>KfW-Antrag stellen (vor Kaufvertrag/Baubeginn)</h3>
+<p>Mit Bestätigung des QNG-Beraters beantragen Sie KfW 297/298/300 bei Ihrer Hausbank — vor jeglichen Vertragsabschlüssen.</p>
+</div>
+<div class="step">
+<h3>Ausführung und Baustellen-Monitoring</h3>
+<p>Berater begleitet den Bau, prüft Materialnachweise, dokumentiert QNG-Konformität.</p>
+</div>
+<div class="step">
+<h3>Abschlussprüfung und Siegelvergabe</h3>
+<p>Nach Fertigstellung: finale Prüfung, Einreichung beim Siegel-Issuer, QNG-Urkunde. Parallel Bestätigung an KfW für Kreditbedingungen.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+<div class="container cta-inner">
+<h2>Lohnt sich QNG für Ihr Vorhaben?</h2>
+<p>Ob QNG in Ihrer Situation die beste Wahl ist, hängt von Projekt, Einkommen und Zielgruppe ab. Unser Partner Förderheld prüft das kostenlos und individuell.</p>
+<div class="cta-row">
+<a href="https://xn--frderheld-07a.com/" target="_blank" rel="noopener" class="cta-btn primary">QNG-Check starten →</a>
+<a href="/" class="cta-btn secondary">Zurück zum Atlas</a>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+<div class="footer-grid">
+<div>
+<div class="footer-brand">Artenschutz-Atlas</div>
+<p>Bundesweiter Leitfaden zu Artenschutz am Gebäude — 45 geschützte Arten, 10.953 Gemeinden, 400 Landkreise, 16 Bundesländer.</p>
+</div>
+<div>
+<h4>Atlas</h4>
+<p><a href="/">Startseite</a></p>
+<p><a href="/#arten">Alle Arten</a></p>
+<p><a href="/#vorteile">Förderung</a></p>
+</div>
+<div>
+<h4>Ihre Vorteile</h4>
+<p><a href="/oekopunkte.html">Ökopunkte</a></p>
+<p><a href="/foerderung.html">KfW &amp; BAFA</a></p>
+<p><a href="/qng-siegel.html">QNG-Siegel</a></p>
+</div>
+<div>
+<h4>Rechtliches</h4>
+<p><a href="#">Impressum</a></p>
+<p><a href="#">Datenschutz</a></p>
+<p><a href="#">Datenquellen</a></p>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 Artenschutz-Atlas · artgerecht-bauen.com</span>
+<span>Quelle: BMWSB, KfW, nachhaltigesbauen.de</span>
+</div>
+</footer>
+
+</body>
+</html>

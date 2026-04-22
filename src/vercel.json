@@ -1,0 +1,28 @@
+{
+  "rewrites": [
+    { "source": "/arten/:slug.html", "destination": "/arten/_template.html" },
+    { "source": "/arten/:slug", "destination": "/arten/_template.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*).html",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/arten/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
+  ],
+  "cleanUrls": false,
+  "trailingSlash": false
+}

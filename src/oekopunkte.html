@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ökopunkte-System — Artenschutz-Atlas</title>
+<meta name="description" content="Wie Ökopunkte funktionieren: Naturschutzrechtliches Ökokonto, Bewertung, Handel. Konkrete Zahlen für Baden-Württemberg und andere Bundesländer. Leitfaden für Bauherren.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --moss:#2d5a3d; --moss-dark:#1e3d28; --moss-light:#4a7d5a;
+  --sand:#f5ede0; --sand-warm:#ebe0cd; --cream:#faf7f1;
+  --clay:#b85444; --clay-soft:#d4a390;
+  --amber:#c18730;
+  --ink:#1a1f1c; --ink-soft:#2c3530;
+  --text:#3d4440; --text-muted:#6b7470; --text-dim:#8a928d;
+  --border:rgba(45,90,61,.12); --border-strong:rgba(45,90,61,.25);
+  --shadow:0 1px 2px rgba(30,61,40,.04), 0 4px 12px rgba(30,61,40,.05);
+  --shadow-lg:0 4px 8px rgba(30,61,40,.06), 0 16px 32px rgba(30,61,40,.08);
+  --oeko:#0f6e56;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{color:var(--ink);font-weight:500;letter-spacing:-0.01em;line-height:1.25}
+h1{font-family:'Fraunces',Georgia,serif;font-weight:400;letter-spacing:-0.02em}
+a{color:var(--moss);text-decoration:none;transition:color .15s}
+a:hover{color:var(--moss-dark);text-decoration:underline;text-underline-offset:3px}
+.container{max-width:960px;margin:0 auto;padding:0 2rem}
+.container-wide{max-width:1320px;margin:0 auto;padding:0 2rem}
+
+/* NAV */
+.nav{background:rgba(250,247,241,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:50}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;max-width:1320px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:18px;color:var(--ink);font-weight:500}
+.brand-icon{width:28px;height:28px;background:var(--moss);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px}
+.nav-links{display:flex;gap:1.75rem;font-size:14px}
+.nav-links a{color:var(--text)}
+.nav-cta{background:var(--moss);color:white;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500}
+.nav-cta:hover{background:var(--moss-dark);color:white;text-decoration:none}
+@media (max-width:720px){.nav-links{display:none}}
+
+/* HERO */
+.page-hero{padding:4rem 0 3rem;background:linear-gradient(180deg,var(--cream) 0%,#e6f0e9 100%);border-bottom:0.5px solid var(--border)}
+.crumbs{font-size:13px;color:var(--text-muted);margin-bottom:1.25rem}
+.crumbs a{color:var(--text-muted);text-decoration:none}
+.crumbs a:hover{color:var(--moss);text-decoration:underline}
+.eyebrow{display:inline-block;font-size:11px;font-weight:500;color:var(--oeko);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1rem;padding:6px 14px;background:white;border-radius:100px;border:0.5px solid var(--border)}
+.page-hero h1{font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.05;margin-bottom:1.25rem;color:var(--ink)}
+.page-hero h1 em{font-style:italic;color:var(--oeko);font-weight:400}
+.page-lead{font-size:19px;line-height:1.55;color:var(--text-muted);font-family:'Fraunces',serif;font-weight:300;max-width:680px}
+
+/* CONTENT */
+.section{padding:3.5rem 0}
+.section-alt{background:white;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
+.content h2{font-family:'Fraunces',serif;font-size:clamp(1.6rem,3vw,2.1rem);margin-bottom:1rem;color:var(--ink);font-weight:500;line-height:1.2}
+.content h3{font-family:'Fraunces',serif;font-size:1.3rem;margin-top:2rem;margin-bottom:0.75rem;color:var(--ink);font-weight:500}
+.content p{margin-bottom:1rem;color:var(--text);font-size:16px;line-height:1.7}
+.content p:last-child{margin-bottom:0}
+.content ul{margin:1rem 0 1rem 1.5rem;color:var(--text);line-height:1.8}
+.content ul li{margin-bottom:0.35rem}
+.content strong{color:var(--ink);font-weight:500}
+
+/* FACT-BOX */
+.fact-box{background:linear-gradient(135deg,#e9f4ee 0%,#f5ede0 100%);border:0.5px solid var(--border);border-left:3px solid var(--oeko);border-radius:10px;padding:1.5rem 1.75rem;margin:1.75rem 0}
+.fact-box .fact-label{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--oeko);margin-bottom:0.5rem}
+.fact-box .fact-value{font-family:'Fraunces',serif;font-size:1.85rem;color:var(--ink);font-weight:500;line-height:1.1;margin-bottom:0.4rem}
+.fact-box p{font-size:14.5px;color:var(--text-muted);margin:0}
+
+/* RECHENBEISPIEL */
+.calc{background:white;border:0.5px solid var(--border);border-radius:14px;padding:2rem;margin:2rem 0;box-shadow:var(--shadow)}
+.calc-head{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:0.5px solid var(--border)}
+.calc-icon{width:40px;height:40px;background:var(--oeko);color:white;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.calc-icon svg{width:22px;height:22px}
+.calc-head h3{margin:0;font-size:1.25rem}
+.calc-row{display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:0.5px dashed var(--border);font-size:14.5px}
+.calc-row:last-child{border-bottom:none}
+.calc-row .lbl{color:var(--text)}
+.calc-row .val{color:var(--ink);font-weight:500;font-family:'Fraunces',serif}
+.calc-total{display:flex;justify-content:space-between;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--oeko);font-size:16px}
+.calc-total .lbl{color:var(--ink);font-weight:500}
+.calc-total .val{color:var(--oeko);font-weight:500;font-family:'Fraunces',serif;font-size:1.4rem}
+.calc-note{margin-top:1rem;font-size:13px;color:var(--text-dim);font-style:italic}
+
+/* MASSNAHMEN-TABELLE */
+.masstable{background:white;border:0.5px solid var(--border);border-radius:14px;overflow:hidden;margin:2rem 0}
+.masstable-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1rem;padding:1rem 1.5rem;border-bottom:0.5px solid var(--border);align-items:center;font-size:14.5px}
+.masstable-row:last-child{border-bottom:none}
+.masstable-row.header{background:var(--sand);font-size:12px;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;font-weight:500}
+.masstable-row .massname{color:var(--ink);font-weight:500}
+.masstable-row .masspoints{font-family:'Fraunces',serif;color:var(--oeko);font-weight:500}
+.masstable-row .massnote{color:var(--text-muted);font-size:13px}
+@media (max-width:640px){.masstable-row{grid-template-columns:1fr;gap:0.3rem}.masstable-row.header{display:none}.masstable-row:not(.header){padding:1rem 1.25rem}}
+
+/* BUNDESLÄNDER-GRID */
+.bl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin:2rem 0}
+.bl-card{background:white;padding:1.5rem;border-radius:12px;border:0.5px solid var(--border);transition:transform .2s,box-shadow .2s}
+.bl-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.bl-card-name{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--ink);font-weight:500;margin-bottom:0.4rem}
+.bl-card-value{color:var(--oeko);font-family:'Fraunces',serif;font-size:1.3rem;font-weight:500;margin-bottom:0.35rem}
+.bl-card-note{font-size:13px;color:var(--text-muted);line-height:1.5}
+
+/* CTA */
+.cta-band{background:var(--ink);color:var(--cream);padding:3.5rem 0}
+.cta-inner{text-align:center;max-width:600px;margin:0 auto}
+.cta-inner h2{color:var(--cream);margin-bottom:1rem;font-family:'Fraunces',serif;font-size:2rem;font-weight:400}
+.cta-inner p{color:rgba(250,247,241,.75);margin-bottom:1.75rem;font-size:16px}
+.cta-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:8px;font-weight:500;font-size:15px;text-decoration:none;transition:transform .15s}
+.cta-btn.primary{background:var(--amber);color:var(--ink)}
+.cta-btn.primary:hover{transform:translateY(-2px);color:var(--ink);text-decoration:none}
+.cta-btn.secondary{background:transparent;color:var(--cream);border:1px solid rgba(250,247,241,.3)}
+.cta-btn.secondary:hover{background:rgba(250,247,241,.08);color:var(--cream);text-decoration:none}
+
+/* FOOTER */
+.footer{background:var(--sand);padding:2.5rem 0;border-top:0.5px solid var(--border)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;max-width:1320px;margin:0 auto;padding:0 2rem}
+@media (max-width:720px){.footer-grid{grid-template-columns:1fr 1fr;gap:1.5rem}}
+.footer-brand{font-family:'Fraunces',serif;font-size:18px;color:var(--ink);margin-bottom:0.75rem}
+.footer p{font-size:13px;color:var(--text-muted);line-height:1.65;margin-bottom:0.35rem}
+.footer h4{font-family:'Inter',sans-serif;font-size:12px;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem;font-weight:500}
+.footer a{color:var(--text-muted);font-size:13px}
+.footer-bottom{max-width:1320px;margin:2rem auto 0;padding:1.5rem 2rem 0;border-top:0.5px solid var(--border);font-size:12px;color:var(--text-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+<div class="nav-inner">
+<a href="/" class="brand">
+<div class="brand-icon">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+</div>
+Artenschutz-Atlas
+</a>
+<div class="nav-links">
+<a href="/#warum">Grundlagen</a>
+<a href="/#arten">Arten</a>
+<a href="/#vorteile">Förderung</a>
+<a href="/#gemeinde">Gemeindeseite</a>
+</div>
+<a href="/#foerderberatung" class="nav-cta">Kostenlose Beratung</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<header class="page-hero">
+<div class="container">
+<div class="crumbs"><a href="/">Atlas</a> → <a href="/#vorteile">Vorteile</a> → Ökopunkte-System</div>
+<div class="eyebrow">Ökokonto-Verordnung</div>
+<h1>Aus der Pflicht wird ein <em>Guthaben</em></h1>
+<p class="page-lead">Das Ökopunkte-System verwandelt ökologische Aufwertungsmaßnahmen in handelbare Werteinheiten. Wer Natur aufwertet, sammelt Punkte — und kann sie später für eigene Bauvorhaben einlösen oder verkaufen.</p>
+</div>
+</header>
+
+<!-- WAS SIND ÖKOPUNKTE -->
+<section class="section">
+<div class="container content">
+<h2>Was sind Ökopunkte?</h2>
+<p>Ökopunkte sind die <strong>Werteinheit</strong>, in der ökologische Aufwertungsmaßnahmen bewertet werden. Das Ökokonto ist dabei kein Geldkonto, sondern ein Maßnahmenkonto: Wer eine naturschutzfachliche Aufwertung durchführt — etwa eine Streuobstwiese pflanzt, einen asphaltierten Parkplatz entsiegelt oder gebäudebrütenden Arten dauerhafte Nisthilfen bietet — bekommt eine entsprechende Punktzahl gutgeschrieben.</p>
+<p>Diese Punkte können Sie später bei eigenen Bauvorhaben als <strong>Ausgleich für Eingriffe in Natur und Landschaft</strong> einlösen. Oder Sie verkaufen sie über Flächenagenturen an andere Vorhabenträger.</p>
+
+<div class="fact-box">
+<div class="fact-label">Rechtsgrundlage</div>
+<div class="fact-value">§ 16 BNatSchG + Landes-Ökokonto-Verordnungen</div>
+<p>Bundesweit geregelt im Bundesnaturschutzgesetz, konkret ausgestaltet in jedem Bundesland. In Baden-Württemberg durch die Ökokonto-Verordnung (ÖKVO) vom 19. Dezember 2010. Zuständig sind die unteren Naturschutzbehörden.</p>
+</div>
+</div>
+</section>
+
+<!-- ZWEI ARTEN -->
+<section class="section section-alt">
+<div class="container content">
+<h2>Zwei Arten von Ökokonten</h2>
+<p>Wichtig für die Praxis: Es gibt <strong>zwei unterschiedliche Ökokonto-Systeme</strong>, die oft verwechselt werden.</p>
+
+<h3>1. Naturschutzrechtliches Ökokonto</h3>
+<p>Für vorgezogene Ausgleichs- und Ersatzmaßnahmen im Außenbereich — Straßenbau, Leitungsbau, Abbauvorhaben, Baumaßnahmen im unbeplanten Außenbereich. Geführt bei den <strong>unteren Naturschutzbehörden</strong> (Landratsämter, kreisfreie Städte).</p>
+
+<h3>2. Bauplanungsrechtliches Ökokonto</h3>
+<p>Für vorgezogene Ausgleichsmaßnahmen in der Bauleitplanung (Baugebiete). Geregelt im <strong>Baugesetzbuch</strong>, geführt von den Städten und Gemeinden.</p>
+
+<p style="margin-top:1.5rem;font-size:14.5px;color:var(--text-muted);">Für Bauherren im Außenbereich ist in der Regel das naturschutzrechtliche Ökokonto relevant. Wer im Gemeindegebiet baut, kommt in Kontakt mit dem bauplanungsrechtlichen Ökokonto.</p>
+</div>
+</section>
+
+<!-- RECHENBEISPIEL -->
+<section class="section">
+<div class="container content">
+<h2>Rechenbeispiel: Einfamilienhaus im Außenbereich (BW)</h2>
+<p>Ein Bauherr plant ein Einfamilienhaus auf einem 800 m² Grundstück am Ortsrand. Durch Versiegelung und Beseitigung einer Obstwiese entsteht ein Eingriff von etwa <strong>15.000 Ökopunkten</strong>. Diese müssen kompensiert werden.</p>
+
+<div class="calc">
+<div class="calc-head">
+<div class="calc-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+</div>
+<h3>Option A: Ökopunkte kaufen</h3>
+</div>
+<div class="calc-row"><span class="lbl">Benötigte Ökopunkte für Ausgleich</span><span class="val">15.000</span></div>
+<div class="calc-row"><span class="lbl">Marktpreis pro Punkt (BW, Stand 2024)</span><span class="val">~1,20&nbsp;€</span></div>
+<div class="calc-row"><span class="lbl">Zusätzliche Abwicklung (Gutachten, Flächenagentur)</span><span class="val">~2.000&nbsp;€</span></div>
+<div class="calc-total"><span class="lbl">Gesamtkosten</span><span class="val">~20.000&nbsp;€</span></div>
+<p class="calc-note">Die Preisspanne liegt je nach Region und Maßnahmentyp bei 0,50 bis 2,50 € pro Punkt. Berechnung daher nur als Orientierung.</p>
+</div>
+
+<div class="calc">
+<div class="calc-head">
+<div class="calc-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
+</div>
+<h3>Option B: Eigene Aufwertung am Grundstück</h3>
+</div>
+<div class="calc-row"><span class="lbl">Nisthilfen Mauersegler/Fledermäuse (8 Kästen)</span><span class="val">~2.000 P.</span></div>
+<div class="calc-row"><span class="lbl">Fassaden- und Dachbegrünung (60 m²)</span><span class="val">~4.000 P.</span></div>
+<div class="calc-row"><span class="lbl">Heimische Heckenpflanzung (40 m lfd.)</span><span class="val">~3.000 P.</span></div>
+<div class="calc-row"><span class="lbl">Entsiegelung / versickerungsfähiger Belag</span><span class="val">~2.500 P.</span></div>
+<div class="calc-row"><span class="lbl">Blühflächen / Magerwiese (150 m²)</span><span class="val">~3.500 P.</span></div>
+<div class="calc-total"><span class="lbl">Eigenleistung, vor Ort</span><span class="val">~15.000 P.</span></div>
+<p class="calc-note">Punktangaben orientieren sich an der ÖKVO-Bewertungsanlage und sind projektabhängig. Entscheidend ist ein Antrag bei der unteren Naturschutzbehörde und die fachliche Bewertung durch einen Gutachter.</p>
+</div>
+</div>
+</section>
+
+<!-- TYPISCHE MASSNAHMEN -->
+<section class="section section-alt">
+<div class="container content">
+<h2>Welche Maßnahmen bringen wie viele Punkte?</h2>
+<p>Die Bewertung richtet sich nach der <strong>Anlage 2 der Ökokonto-Verordnung</strong> und wird durch Gutachter ermittelt. Die folgenden Werte sind typische Richtwerte für Baden-Württemberg — exakte Punkte ergeben sich aus Flächengröße, Ausgangsbiotop, Zielbiotop und Pflegekonzept.</p>
+
+<div class="masstable">
+<div class="masstable-row header">
+<div>Maßnahme</div>
+<div>Ökopunkte</div>
+<div>Bezug</div>
+</div>
+<div class="masstable-row">
+<div class="massname">Entsiegelung asphaltierter Fläche → Magerwiese</div>
+<div class="masspoints">~25–35 P.</div>
+<div class="massnote">pro m²</div>
+</div>
+<div class="masstable-row">
+<div class="massname">Streuobstwiese anlegen</div>
+<div class="masspoints">~18–28 P.</div>
+<div class="massnote">pro m²</div>
+</div>
+<div class="masstable-row">
+<div class="massname">Heimische Hecke pflanzen (Schlehe, Weißdorn, Wildrose)</div>
+<div class="masspoints">~60–90 P.</div>
+<div class="massnote">pro m lfd.</div>
+</div>
+<div class="masstable-row">
+<div class="massname">Fassaden-/Dachbegrünung extensiv</div>
+<div class="masspoints">~40–80 P.</div>
+<div class="massnote">pro m²</div>
+</div>
+<div class="masstable-row">
+<div class="massname">Nisthilfen für Mauersegler (fest verbaut)</div>
+<div class="masspoints">~250–500 P.</div>
+<div class="massnote">pro Brutplatz</div>
+</div>
+<div class="masstable-row">
+<div class="massname">Fledermaus-Quartier am Gebäude</div>
+<div class="masspoints">~300–600 P.</div>
+<div class="massnote">pro Quartier</div>
+</div>
+<div class="masstable-row">
+<div class="massname">Laichgewässer für Amphibien neu anlegen</div>
+<div class="masspoints">~40–70 P.</div>
+<div class="massnote">pro m²</div>
+</div>
+<div class="masstable-row">
+<div class="massname">Urwaldparzelle (Nutzungsverzicht Wald)</div>
+<div class="masspoints">~40.000 P.</div>
+<div class="massnote">pro Hektar</div>
+</div>
+</div>
+
+<p style="font-size:13px;color:var(--text-dim);font-style:italic;margin-top:1rem;">Quelle: ÖKVO Anlage 2 und Praxiswerte aus Flächenagentur-BW-Vermittlungen. Verbindlich ist die Bewertung durch einen anerkannten Gutachter.</p>
+</div>
+</section>
+
+<!-- BUNDESLÄNDER-UNTERSCHIEDE -->
+<section class="section">
+<div class="container content">
+<h2>Bundesländer im Vergleich</h2>
+<p>Das Ökokonto-System ist Ländersache. Die Details und Preise unterscheiden sich teils erheblich.</p>
+
+<div class="bl-grid">
+<div class="bl-card">
+<div class="bl-card-name">Baden-Württemberg</div>
+<div class="bl-card-value">~1,20 €/Punkt</div>
+<div class="bl-card-note">Ökokonto-Verordnung (ÖKVO) seit 2011. Handel etabliert über Flächenagentur BW. Mindestens 2.000 m² und 10.000 Punkte pro Maßnahme.</div>
+</div>
+<div class="bl-card">
+<div class="bl-card-name">Bayern</div>
+<div class="bl-card-value">~0,80–1,50 €/Punkt</div>
+<div class="bl-card-note">Bayerisches Naturschutzgesetz + Kompensationsverordnung. Ökokonten bei den unteren Naturschutzbehörden. Bayerische Kompensationsverordnung regelt Details.</div>
+</div>
+<div class="bl-card">
+<div class="bl-card-name">Nordrhein-Westfalen</div>
+<div class="bl-card-value">~1,00–2,00 €/Punkt</div>
+<div class="bl-card-note">Landesnaturschutzgesetz + Kompensationsverzeichnisverordnung. Zentrales Kompensationsverzeichnis. Preise tendenziell höher als im Süden.</div>
+</div>
+<div class="bl-card">
+<div class="bl-card-name">Niedersachsen</div>
+<div class="bl-card-value">~0,70–1,20 €/Punkt</div>
+<div class="bl-card-note">Niedersächsisches Ausführungsgesetz zum BNatSchG. Ökopunkte zählen auch für städtebauliche Eingriffe anrechenbar.</div>
+</div>
+</div>
+
+<p style="font-size:13px;color:var(--text-dim);margin-top:1rem;">Die Preisangaben sind Richtwerte aus öffentlichen Verkaufslisten der Flächenagenturen und unterliegen Marktschwankungen. Für Ihr konkretes Bundesland finden Sie genauere Angaben bei der zuständigen Landesanstalt oder Flächenagentur.</p>
+</div>
+</section>
+
+<!-- VERZINSUNG / HANDEL -->
+<section class="section section-alt">
+<div class="container content">
+<h2>Verzinsung und Handel</h2>
+<p>Ökopunkte sind eine ungewöhnliche Wertanlage: Sie werden <strong>nicht nur bevorratet, sondern verzinst</strong>. In Baden-Württemberg steigen die gutgeschriebenen Punkte pro Jahr nach Maßnahmenumsetzung um <strong>3 Prozent</strong> — belohnt wird also langfristige ökologische Entwicklung.</p>
+
+<p>Der Handel funktioniert in mehreren Formen:</p>
+<ul>
+<li><strong>Direktverkauf</strong> zwischen Maßnahmenträger und Eingriffsverursacher</li>
+<li><strong>Flächenagenturen</strong> als Vermittler (in BW: Flächenagentur Baden-Württemberg)</li>
+<li><strong>Gemeindliche Ökokonten</strong>, die bei der Bauleitplanung aufgelöst werden</li>
+<li><strong>Kommerzielle Ökoanbieter</strong> wie die Landsiedlung BW, die Flächen und Maßnahmen zusammenführen</li>
+</ul>
+
+<p>Wichtig: Ein Punkt ist nur so viel wert, wie ein Vorhabenträger bereit ist, dafür zu zahlen. In wirtschaftlich aktiven Regionen mit viel Bautätigkeit (Großraum Stuttgart, München, Rhein-Main) sind Ökopunkte deutlich teurer als in strukturschwachen Gebieten.</p>
+</div>
+</section>
+
+<!-- WAS TUN -->
+<section class="section">
+<div class="container content">
+<h2>So gehen Sie konkret vor</h2>
+<ul>
+<li><strong>Gemeinde- und Kreisseite des Atlas besuchen</strong> — dort stehen die zuständige untere Naturschutzbehörde und lokale Besonderheiten.</li>
+<li><strong>Kontakt zur UNB aufnehmen</strong>, um das Vorhaben zu beschreiben und zu klären, wie hoch der Ausgleichsbedarf ist.</li>
+<li><strong>Gutachter beauftragen</strong>, der die Eingriffs-Ausgleichs-Bilanz erstellt (ca. 1.500–4.000 €, abhängig vom Projekt).</li>
+<li><strong>Entscheiden: kaufen oder selbst produzieren</strong> — Ökopunkte aus dem Kontobestand der Flächenagentur sind sofort verfügbar, eigene Maßnahmen brauchen Vorlaufzeit.</li>
+<li><strong>Ausgleichsmaßnahme dokumentieren</strong> und den Nachweis bei der UNB einreichen.</li>
+</ul>
+
+<p style="margin-top:1.5rem;">Wir helfen Ihnen dabei, Artenschutz-Maßnahmen an Ihrem Bauvorhaben so zu planen, dass sie <strong>sowohl rechtlich erforderlich als auch ökopunktewirksam</strong> sind — zum Beispiel durch fachgerechten Einbau von Nisthilfen in die Fassade oder Fledermausquartieren unter der Dachhaut.</p>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+<div class="container cta-inner">
+<h2>Brauchen Sie konkrete Hilfe?</h2>
+<p>Unser Partner Förderheld bietet kostenlose Beratung zu allen Fördermitteln — auch zur Kombination mit Ökopunkten, wenn KfW-Programme genutzt werden sollen.</p>
+<div class="cta-row">
+<a href="https://xn--frderheld-07a.com/" target="_blank" rel="noopener" class="cta-btn primary">Förderberatung starten →</a>
+<a href="/" class="cta-btn secondary">Zurück zum Atlas</a>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+<div class="footer-grid">
+<div>
+<div class="footer-brand">Artenschutz-Atlas</div>
+<p>Bundesweiter Leitfaden zu Artenschutz am Gebäude — 45 geschützte Arten, 10.953 Gemeinden, 400 Landkreise, 16 Bundesländer.</p>
+</div>
+<div>
+<h4>Atlas</h4>
+<p><a href="/">Startseite</a></p>
+<p><a href="/#arten">Alle Arten</a></p>
+<p><a href="/#vorteile">Förderung</a></p>
+</div>
+<div>
+<h4>Ihre Vorteile</h4>
+<p><a href="/oekopunkte.html">Ökopunkte</a></p>
+<p><a href="/foerderung.html">KfW &amp; BAFA</a></p>
+<p><a href="/qng-siegel.html">QNG-Siegel</a></p>
+</div>
+<div>
+<h4>Rechtliches</h4>
+<p><a href="#">Impressum</a></p>
+<p><a href="#">Datenschutz</a></p>
+<p><a href="#">Datenquellen</a></p>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 Artenschutz-Atlas · artgerecht-bauen.com</span>
+<span>Daten: BfN, LUBW, dl-de/by-2-0</span>
+</div>
+</footer>
+
+</body>
+</html>

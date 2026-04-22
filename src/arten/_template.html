@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art-Steckbrief · Artenschutz-Atlas</title>
+<meta name="description" content="Geschützte Art: Steckbrief, Konflikte bei Bauvorhaben, CEF-konforme Nisthilfen">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --moss:#2d5a3d;--moss-dark:#1e3d28;--moss-light:#4a7d5a;
+  --sand:#f5ede0;--sand-warm:#ebe0cd;--cream:#faf7f1;
+  --clay:#b85444;--clay-soft:#d4a390;--amber:#c18730;
+  --ink:#1a1f1c;--ink-soft:#2c3530;
+  --text:#3d4440;--text-muted:#6b7470;--text-dim:#8a928d;
+  --border:rgba(45,90,61,.12);--border-strong:rgba(45,90,61,.25);
+  --shadow:0 1px 2px rgba(30,61,40,.04),0 4px 12px rgba(30,61,40,.05);
+  --shadow-lg:0 4px 8px rgba(30,61,40,.06),0 16px 32px rgba(30,61,40,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{color:var(--ink);font-weight:500;letter-spacing:-0.01em}
+h1{font-family:'Fraunces',serif;font-weight:400;letter-spacing:-0.02em;line-height:1.1}
+h2{font-family:'Fraunces',serif;font-weight:400;font-size:1.75rem;line-height:1.2}
+h2 em{font-style:italic;color:var(--moss)}
+h3{font-family:'Fraunces',serif;font-weight:500;font-size:1.25rem}
+p{line-height:1.7}
+a{color:var(--moss);text-decoration:none;transition:color .15s}
+a:hover{color:var(--moss-dark);text-decoration:underline;text-underline-offset:3px}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+
+.nav{background:rgba(250,247,241,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:50}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;max-width:1320px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:18px;color:var(--ink);font-weight:500}
+.brand-icon{width:28px;height:28px;background:var(--moss);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white}
+.nav-links{display:flex;gap:1.75rem;font-size:14px}
+.nav-links a{color:var(--text)}
+.nav-cta{background:var(--moss);color:white;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500}
+.nav-cta:hover{background:var(--moss-dark);color:white;text-decoration:none}
+@media (max-width:720px){.nav-links{display:none}}
+
+.hero-strip{background:linear-gradient(180deg,var(--cream) 0%,var(--sand) 100%);padding:2rem 0 0}
+.crumb{font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.crumb a{color:var(--text-muted)}
+.crumb .sep{color:var(--text-dim)}
+.art-hero-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:3rem;align-items:start;padding-bottom:3rem}
+@media (max-width:900px){.art-hero-grid{grid-template-columns:1fr;gap:1.5rem}}
+
+.art-hero-image{aspect-ratio:4/3;border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg);position:relative;background:var(--sand)}
+.art-hero-image img{width:100%;height:100%;object-fit:cover;display:block}
+.art-hero-image .attr{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,transparent,rgba(26,31,28,.7));color:rgba(255,255,255,.85);font-size:10.5px;padding:30px 16px 10px;font-style:italic}
+
+.art-hero-content .gruppe-pill{display:inline-flex;align-items:center;gap:6px;background:white;border:0.5px solid var(--border);color:var(--moss);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:500;letter-spacing:0.3px;margin-bottom:1rem}
+h1.art-title{font-size:clamp(2.3rem,5vw,3.3rem);margin-bottom:0.4rem}
+.sci{font-style:italic;color:var(--text-muted);font-size:17px;margin-bottom:1.25rem;font-family:'Fraunces',serif}
+.art-status-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:6px 12px;border-radius:6px;font-weight:500;border:1px solid}
+.badge.schutz-streng{background:#fae5dd;color:#993c1d;border-color:rgba(153,60,29,0.2)}
+.badge.schutz-besonders{background:#fff0d0;color:#8a5a15;border-color:rgba(138,90,21,0.2)}
+.badge.rote-liste{background:white;color:var(--text);border-color:var(--border-strong)}
+.art-lead{font-size:17px;line-height:1.65;color:var(--text-muted);font-family:'Fraunces',serif;font-weight:300;margin-bottom:1.25rem}
+.art-quicklinks{display:flex;flex-wrap:wrap;gap:10px;margin-top:1.25rem}
+.quicklink{display:inline-flex;align-items:center;gap:6px;background:white;border:0.5px solid var(--border);padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--text)}
+.quicklink svg{width:14px;height:14px;color:var(--moss);flex-shrink:0}
+.quicklink:hover{border-color:var(--moss);color:var(--moss);text-decoration:none;background:var(--cream)}
+
+.content-section{padding:3rem 0;border-top:0.5px solid var(--border)}
+.content-section h2{margin-bottom:1rem}
+.section-lead{font-size:16.5px;color:var(--text-muted);margin-bottom:1.75rem;line-height:1.7;max-width:800px}
+
+.fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1rem}
+.fact-card{background:white;border:0.5px solid var(--border);border-radius:14px;padding:1.5rem}
+.fact-card h3{font-size:1.05rem;margin-bottom:0.6rem;display:flex;align-items:center;gap:10px}
+.fact-card h3 svg{width:18px;height:18px;color:var(--moss);flex-shrink:0}
+.fact-card p{font-size:14.5px;color:var(--text);line-height:1.7}
+
+.struktur-callout{background:white;border-radius:16px;padding:2rem 2.25rem;border-left:3px solid var(--moss);box-shadow:var(--shadow)}
+.struktur-callout h3{margin-bottom:0.75rem}
+.struktur-callout p{font-size:15.5px;color:var(--text);line-height:1.75}
+
+.erkennen-block{background:white;border-radius:14px;padding:1.5rem 2rem;border:0.5px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+@media (max-width:700px){.erkennen-block{grid-template-columns:1fr}}
+.erkennen-block h4{font-family:'Fraunces',serif;font-weight:500;font-size:1rem;color:var(--ink);margin-bottom:0.4rem;display:flex;align-items:center;gap:8px}
+.erkennen-block h4 svg{width:15px;height:15px;color:var(--moss)}
+.erkennen-block p{font-size:14px;color:var(--text-muted);line-height:1.65}
+.audio-link{margin-top:0.75rem;display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--moss);font-weight:500}
+
+.konflikt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.konflikt-card{background:white;padding:1.25rem 1.5rem;border-radius:12px;border:0.5px solid var(--border);border-left:3px solid var(--clay)}
+.konflikt-card-title{font-size:14.5px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.konflikt-card-body{font-size:13px;color:var(--text-muted)}
+
+.bauzeit-callout{background:linear-gradient(135deg,#fff0d0 0%,#ffe5b4 100%);border-radius:14px;padding:1.5rem 2rem;border:1px solid rgba(138,90,21,0.15);display:flex;align-items:flex-start;gap:1.25rem;margin-top:1.5rem}
+.bauzeit-callout svg{width:28px;height:28px;color:#8a5a15;flex-shrink:0;margin-top:2px}
+.bauzeit-callout h4{font-family:'Fraunces',serif;font-weight:500;color:#6b4410;margin-bottom:0.35rem;font-size:1.05rem}
+.bauzeit-callout p{font-size:14px;color:#5a3909;line-height:1.7}
+
+.nisthilfen-typen{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem}
+.nisthilfe-typ{background:white;border:0.5px solid var(--border);border-radius:14px;padding:0;transition:box-shadow .2s;overflow:hidden;display:flex;flex-direction:column}
+.nisthilfe-typ:hover{box-shadow:var(--shadow-lg)}
+.nisthilfe-illu{background:linear-gradient(180deg,#eef2ef,#e8eeeb);padding:0;border-bottom:0.5px solid var(--border)}
+.nisthilfe-illu svg{display:block;width:100%;height:auto}
+.nisthilfe-typ .typ-num{display:inline-block;font-family:'Fraunces',serif;font-size:1.8rem;color:var(--moss);line-height:1;margin:1.25rem 0 0.5rem 1.75rem}
+.nisthilfe-typ h3{margin:0 1.75rem 0.5rem;font-size:1.15rem}
+.nisthilfe-typ p{font-size:13.5px;color:var(--text-muted);line-height:1.65;margin:0 1.75rem 0.75rem}
+.nisthilfe-typ .vorteil{display:inline-block;background:var(--cream);color:var(--moss);padding:5px 10px;border-radius:6px;font-size:11.5px;font-weight:500;letter-spacing:0.2px;margin:0 1.75rem 1.5rem}
+
+.specs-block{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+@media (max-width:700px){.specs-block{grid-template-columns:1fr}}
+.spec-card{background:white;border:0.5px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem}
+.spec-card h4{font-family:'Fraunces',serif;font-weight:500;color:var(--ink);margin-bottom:0.5rem;letter-spacing:0.3px;text-transform:uppercase;font-size:11px}
+.spec-card p{font-size:13.5px;color:var(--text);line-height:1.7}
+
+.praxis-list{display:flex;flex-direction:column;gap:1.5rem}
+.praxis-case{background:white;border-radius:18px;overflow:hidden;border:0.5px solid var(--border);box-shadow:var(--shadow)}
+.praxis-head{background:linear-gradient(135deg,var(--moss) 0%,var(--moss-dark) 100%);color:white;padding:1.5rem 2rem;position:relative}
+.praxis-head::before{content:"";position:absolute;top:-50%;right:-10%;width:40%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 60%)}
+.praxis-head .meta{display:flex;gap:1rem;font-size:11.5px;color:rgba(255,255,255,.75);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:0.4rem;position:relative}
+.praxis-head h3{color:white;font-family:'Fraunces',serif;font-weight:400;font-size:1.4rem;position:relative}
+.praxis-body{padding:1.75rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media (max-width:700px){.praxis-body{grid-template-columns:1fr}}
+.praxis-col h4{font-family:'Fraunces',serif;font-weight:500;font-size:12px;color:var(--clay);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.5rem}
+.praxis-col p{font-size:14px;color:var(--text);line-height:1.7}
+.praxis-foot{background:var(--cream);padding:1rem 2rem;border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:13px}
+.praxis-lehre{font-style:italic;color:var(--text-muted);flex:1;min-width:250px}
+.praxis-source{display:inline-flex;align-items:center;gap:6px;color:var(--moss);font-weight:500;font-size:12.5px}
+
+.cta-band{background:linear-gradient(135deg,var(--moss) 0%,var(--moss-dark) 100%);padding:3rem 2rem;color:white;text-align:center;border-radius:18px;margin:2rem 0;position:relative;overflow:hidden}
+.cta-band::before{content:"";position:absolute;top:-50%;right:-20%;width:60%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 60%)}
+.cta-band h2{color:white;font-family:'Fraunces',serif;font-size:1.6rem;font-weight:400;margin-bottom:0.75rem;position:relative}
+.cta-band p{color:rgba(255,255,255,.75);font-size:14.5px;max-width:600px;margin:0 auto 1.5rem;position:relative}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;background:white;color:var(--moss-dark);padding:14px 28px;border-radius:10px;font-weight:500;position:relative;transition:transform .15s;font-size:14px;text-decoration:none}
+.cta-btn:hover{transform:translateY(-2px);color:var(--moss-dark);text-decoration:none}
+
+.quellen-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.quelle-card{background:white;border:0.5px solid var(--border);border-left:2px solid var(--moss);border-radius:10px;padding:1.25rem 1.5rem}
+.quelle-card .org{font-size:10.5px;color:var(--moss);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:4px}
+.quelle-card h4{font-family:'Fraunces',serif;font-weight:500;font-size:15.5px;color:var(--ink);line-height:1.4;margin-bottom:6px}
+.quelle-card .meta{font-size:12px;color:var(--text-dim);margin-bottom:8px}
+.quelle-card a{font-size:12.5px;color:var(--moss);font-weight:500;word-break:break-all}
+
+.loading-hero{padding:8rem 0;text-align:center;color:var(--text-dim)}
+
+footer{background:var(--ink-soft);color:rgba(255,255,255,.7);padding:3rem 0 2rem;margin-top:4rem;font-size:13.5px;line-height:1.7}
+footer .container{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;max-width:1320px}
+footer h4{color:white;font-size:13px;font-weight:500;margin-bottom:1rem;letter-spacing:.5px}
+footer a{color:rgba(255,255,255,.7)}
+footer a:hover{color:white}
+footer small{display:block;color:rgba(255,255,255,.4);margin-top:2rem;padding-top:1.5rem;border-top:0.5px solid rgba(255,255,255,.1);grid-column:1/-1;font-size:11.5px}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+<div class="nav-inner">
+<div class="brand"><div class="brand-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15 8L21 9L17 14L18 21L12 18L6 21L7 14L3 9L9 8L12 2Z"/></svg></div>Artenschutz-Atlas</div>
+<div class="nav-links"><a href="/#warum">Grundlagen</a><a href="/#arten">Arten</a><a href="/gemeinde/boeblingen.html">Böblingen</a></div>
+<a href="https://artgerecht-bauen.com" class="nav-cta">Zum Shop →</a>
+</div>
+</nav>
+
+<div id="loading" class="loading-hero">Lade Steckbrief…</div>
+
+<div id="content" class="hidden">
+
+<section class="hero-strip">
+<div class="container">
+<div class="crumb"><a href="/">Atlas</a><span class="sep">›</span><a href="/#arten">Arten</a><span class="sep">›</span><span id="crumb-name">—</span></div>
+<div class="art-hero-grid">
+<div class="art-hero-image"><img id="art-img" src="" alt=""><div class="attr" id="art-attr"></div></div>
+<div class="art-hero-content">
+<div class="gruppe-pill" id="art-gruppe">—</div>
+<h1 class="art-title" id="art-name">—</h1>
+<div class="sci" id="art-sci">—</div>
+<div class="art-status-row" id="art-badges"></div>
+<p class="art-lead" id="art-lead">—</p>
+<div class="art-quicklinks" id="art-quicklinks"></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="content-section" id="lebensweise-section">
+<div class="container">
+<h2>Die Art auf <em>einen Blick</em></h2>
+<p class="section-lead" id="art-beschreibung-lang"></p>
+<div class="fact-grid" id="fact-grid"></div>
+</div>
+</section>
+
+<section class="content-section" id="strukturen-section">
+<div class="container">
+<h2>Wo nistet die Art <em>am Gebäude?</em></h2>
+<p class="section-lead">Bei Sanierungsplanung zuerst prüfen: Gibt es diese Strukturen an Ihrem Gebäude?</p>
+<div class="struktur-callout"><h3>Typische Nistplätze</h3><p id="relevante-strukturen">—</p></div>
+</div>
+</section>
+
+<section class="content-section" id="erkennen-section">
+<div class="container">
+<h2><em>Erkennen</em> und nachweisen</h2>
+<p class="section-lead">Bevor die Baumaßnahme startet: Hinweise auf Anwesenheit der Art erkennen.</p>
+<div class="erkennen-block">
+<div>
+<h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m-11-9h6m6 0h6"/></svg>Aktivität & Verhalten</h4>
+<p id="erkennen-aktivitaet">—</p>
+<a href="#" id="stimme-link" class="audio-link hidden"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>Stimme anhören →</a>
+</div>
+<div>
+<h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Anzeichen am Gebäude</h4>
+<p id="anzeichen-am-gebaeude">—</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="content-section" id="konflikt-section">
+<div class="container">
+<h2>Bei welchen <em>Bauvorhaben</em> kritisch?</h2>
+<p class="section-lead">Genau diese Bautätigkeiten können die Art treffen. Wer sich vorher informiert, spart Zeit und Bußgelder.</p>
+<div class="konflikt-grid" id="konflikt-grid"></div>
+<div class="bauzeit-callout" id="bauzeit-block">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+<div><h4>Optimales Bauzeitfenster</h4><p id="bauzeit-text">—</p></div>
+</div>
+</div>
+</section>
+
+<section class="content-section" id="nisthilfen-typen-section">
+<div class="container">
+<h2>Vier Arten von <em>Nisthilfen</em></h2>
+<p class="section-lead">CEF-Maßnahmen müssen vor Beginn der Bauarbeiten funktionsfähig sein. Je nach baulicher Situation eignet sich ein anderer Typ.</p>
+<div class="nisthilfen-typen" id="nisthilfen-typen-grid"></div>
+<h3 id="specs-headline" style="margin-top:2.5rem;margin-bottom:0.75rem">Technische Mindestanforderungen</h3>
+<div class="specs-block" id="specs-block"></div>
+</div>
+</section>
+
+<section class="content-section" id="praxis-section">
+<div class="container">
+<h2>Aus der <em>Praxis</em></h2>
+<p class="section-lead">Dokumentierte Sanierungsprojekte mit konkreten Lösungen und Ergebnissen.</p>
+<div class="praxis-list" id="praxis-list"></div>
+</div>
+</section>
+
+<section class="content-section" id="shop-cta">
+<div class="container">
+<div class="cta-band">
+<h2>Passende Nisthilfen im Shop</h2>
+<p>Schwegler, Hasselfeldt und weitere bewährte Hersteller — direkt online bestellbar für Ihr Projekt.</p>
+<a href="https://artgerecht-bauen.com" class="cta-btn">Zum Shop <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+</div>
+</div>
+</section>
+
+<section class="content-section" id="quellen-section">
+<div class="container">
+<h2><em>Quellen</em> und weitere Informationen</h2>
+<p class="section-lead">Fachlich geprüfte Quellen. Alle Inhalte dieses Steckbriefs basieren auf den folgenden Publikationen.</p>
+<div class="quellen-list" id="quellen-list"></div>
+</div>
+</section>
+
+</div>
+
+<footer>
+<div class="container">
+<div><h4>Artenschutz-Atlas</h4><p style="font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.7;">Bundesweiter Leitfaden für Bauherren, Architekten und Energieberater.</p></div>
+<div><h4>Rechtliches</h4><p><a href="#">Impressum</a></p><p><a href="#">Datenschutz</a></p></div>
+<div><h4>Daten-Quellen</h4><p style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.65;">Bilder: <a href="https://inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> (CC-BY). Inhalte: siehe Quellen-Sektion je Art.</p></div>
+<div><h4>Projekt</h4><p><a href="https://artgerecht-bauen.com">artgerecht-bauen.com</a></p><p style="color:rgba(255,255,255,.5);font-size:12px;">Haus und Sicherheit GmbH</p></div>
+<small>Stand 18.04.2026 · Dieser Atlas ersetzt keine saP und keine Fachberatung</small>
+</div>
+</footer>
+
+<script>
+var API = 'https://wsubvpdyakzpnapgsrnm.supabase.co/functions/v1/atlas-public-data';
+var GRUPPEN = {gebaeudebrueter:{label:'Gebäudebrüter',icon:'🏠'},fledermaus:{label:'Fledermaus',icon:'🦇'},eule:{label:'Eule',icon:'🦉'},gartenvogel:{label:'Gartenvogel',icon:'🐦'},saeugetier:{label:'Säugetier',icon:'🐿️'},reptil:{label:'Reptil',icon:'🦎'},amphibie:{label:'Amphibie',icon:'🐸'},insekt:{label:'Insekt',icon:'🐝'}};
+
+var slug = location.pathname.split('/').pop().replace(/\.html?$/, '');
+if(!slug || slug === 'arten'){
+  document.getElementById('loading').innerHTML = 'Keine Art angegeben. <a href="/#arten">Zurück zur Übersicht</a>';
+} else {
+  fetch(API + '/art/' + slug + '?t=' + Date.now())
+    .then(function(r){if(!r.ok) throw new Error('API HTTP '+r.status);return r.json();})
+    .then(function(d){if(!d.art) throw new Error('API: art=null'); 
+      try { render(d.art); }
+      catch(renderErr){
+        console.error('[Atlas] Render-Fehler:', renderErr);
+        throw new Error('Render: ' + renderErr.message);
+      }
+    })
+    .catch(function(e){
+      console.error('[Atlas] Fetch/Render failed:', e);
+      document.getElementById('loading').innerHTML = 
+        '<div style="max-width:600px;margin:0 auto;text-align:center;">' +
+        '<p style="font-size:17px;color:var(--ink);margin-bottom:0.5rem;">Steckbrief konnte nicht geladen werden</p>' +
+        '<p style="font-size:13px;color:var(--text-dim);margin-bottom:1rem;">Slug: <code>' + slug + '</code> · Fehler: <code>' + (e.message||e) + '</code></p>' +
+        '<p style="font-size:13.5px;"><a href="/#arten">Zurück zur Übersicht</a> oder <a href="" onclick="location.reload();return false;">Seite neu laden</a></p>' +
+        '</div>';
+    });
+}
+
+function esc(s){if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function hideSection(id){var el=document.getElementById(id); if(el) el.classList.add('hidden');}
+
+// SVG-Illustrationen für Nisthilfen-Typen (im Atlas-Designstil, eigener Content, copyright-frei)
+function nisthilfeIllustration(typ){
+  var palette = {
+    sky: '#e8eeeb', stone: '#d4c9b5', wood: '#b88a5c', darkWood: '#6e5536',
+    moss: '#2d5a3d', line: '#3d4440', lineLight: '#8a928d',
+    bird: '#1a1f1c', shadow: 'rgba(30,61,40,.08)'
+  };
+  
+  if(typ === 'integriertes_quartier'){
+    return '<svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" aria-label="Integriertes Quartier — Querschnitt durch Dachkante mit verborgenem Brutraum">' +
+      '<rect width="260" height="160" fill="'+palette.sky+'" rx="8"/>' +
+      // Dachschräge
+      '<polygon points="50,30 230,100 230,140 50,140" fill="'+palette.stone+'" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Dachziegel-Linien
+      '<line x1="70" y1="38" x2="240" y2="108" stroke="'+palette.line+'" stroke-width="0.6" opacity="0.4"/>' +
+      '<line x1="90" y1="46" x2="235" y2="104" stroke="'+palette.line+'" stroke-width="0.6" opacity="0.4"/>' +
+      '<line x1="110" y1="54" x2="230" y2="100" stroke="'+palette.line+'" stroke-width="0.6" opacity="0.4"/>' +
+      // Wand unten
+      '<rect x="50" y="100" width="180" height="40" fill="#f5ede0" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Brutraum innen (versteckt)
+      '<rect x="140" y="78" width="55" height="22" fill="'+palette.darkWood+'" opacity="0.25" stroke="'+palette.darkWood+'" stroke-width="1" stroke-dasharray="3,2"/>' +
+      // Einflugloch oval (klein, exponiert)
+      '<ellipse cx="192" cy="93" rx="4" ry="2.5" fill="'+palette.bird+'"/>' +
+      // Mauersegler im Anflug (Silhouette)
+      '<path d="M 215 75 Q 220 70, 228 72 L 228 74 Q 222 73, 218 78 Z" fill="'+palette.bird+'"/>' +
+      '<path d="M 222 72 L 225 70 L 228 74 Z" fill="'+palette.bird+'" opacity="0.7"/>' +
+      // Label
+      '<text x="130" y="154" text-anchor="middle" fill="'+palette.lineLight+'" font-family="Inter,sans-serif" font-size="9" font-weight="500" letter-spacing="1">QUERSCHNITT · DACHKANTE</text>' +
+      '</svg>';
+  }
+  
+  if(typ === 'traufkasten'){
+    return '<svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" aria-label="Traufkasten — abgeteilte Bruträume mit Stellbrettern">' +
+      '<rect width="260" height="160" fill="'+palette.sky+'" rx="8"/>' +
+      // Dachschräge oben
+      '<polygon points="40,20 230,20 230,45 40,65" fill="'+palette.stone+'" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Traufkasten (horizontal)
+      '<rect x="40" y="60" width="190" height="36" fill="'+palette.wood+'" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Stellbretter innen (Abteilungen)
+      '<line x1="80" y1="63" x2="80" y2="93" stroke="'+palette.line+'" stroke-width="1"/>' +
+      '<line x1="125" y1="63" x2="125" y2="93" stroke="'+palette.line+'" stroke-width="1"/>' +
+      '<line x1="170" y1="63" x2="170" y2="93" stroke="'+palette.line+'" stroke-width="1"/>' +
+      // Einfluglöcher (oval)
+      '<ellipse cx="60" cy="78" rx="3.5" ry="2.5" fill="'+palette.bird+'"/>' +
+      '<ellipse cx="102" cy="78" rx="3.5" ry="2.5" fill="'+palette.bird+'"/>' +
+      '<ellipse cx="147" cy="78" rx="3.5" ry="2.5" fill="'+palette.bird+'"/>' +
+      '<ellipse cx="192" cy="78" rx="3.5" ry="2.5" fill="'+palette.bird+'"/>' +
+      // Wand unten
+      '<rect x="40" y="95" width="190" height="45" fill="#f5ede0" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Mauersegler im Anflug
+      '<path d="M 210 60 Q 215 55, 223 57 L 223 59 Q 217 58, 213 63 Z" fill="'+palette.bird+'"/>' +
+      // Bemaßung oben
+      '<line x1="40" y1="10" x2="230" y2="10" stroke="'+palette.lineLight+'" stroke-width="0.8"/>' +
+      '<line x1="40" y1="6" x2="40" y2="14" stroke="'+palette.lineLight+'" stroke-width="0.8"/>' +
+      '<line x1="230" y1="6" x2="230" y2="14" stroke="'+palette.lineLight+'" stroke-width="0.8"/>' +
+      '<text x="130" y="154" text-anchor="middle" fill="'+palette.lineLight+'" font-family="Inter,sans-serif" font-size="9" font-weight="500" letter-spacing="1">TRAUFKASTEN · 4 ABTEILUNGEN</text>' +
+      '</svg>';
+  }
+  
+  if(typ === 'niststein_fassade'){
+    return '<svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" aria-label="Niststein — industrielle Betonform in Fassade">' +
+      '<rect width="260" height="160" fill="'+palette.sky+'" rx="8"/>' +
+      // Fassade (Mauerwerk-Textur durch Linien)
+      '<rect x="20" y="15" width="220" height="115" fill="#f5ede0" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Mauerwerk-Linien (Ziegelmuster angedeutet)
+      '<g stroke="'+palette.line+'" stroke-width="0.4" opacity="0.3">' +
+        '<line x1="20" y1="35" x2="240" y2="35"/>' +
+        '<line x1="20" y1="55" x2="240" y2="55"/>' +
+        '<line x1="20" y1="95" x2="240" y2="95"/>' +
+        '<line x1="20" y1="115" x2="240" y2="115"/>' +
+        '<line x1="60" y1="35" x2="60" y2="55"/>' +
+        '<line x1="100" y1="35" x2="100" y2="55"/>' +
+        '<line x1="140" y1="35" x2="140" y2="55"/>' +
+        '<line x1="180" y1="35" x2="180" y2="55"/>' +
+        '<line x1="220" y1="35" x2="220" y2="55"/>' +
+        '<line x1="40" y1="95" x2="40" y2="115"/>' +
+        '<line x1="80" y1="95" x2="80" y2="115"/>' +
+        '<line x1="120" y1="95" x2="120" y2="115"/>' +
+        '<line x1="160" y1="95" x2="160" y2="115"/>' +
+        '<line x1="200" y1="95" x2="200" y2="115"/>' +
+      '</g>' +
+      // Niststein (integriert, rechteckig, hellgrau = Beton)
+      '<rect x="90" y="58" width="80" height="40" fill="#c8c4b8" stroke="'+palette.line+'" stroke-width="1.5"/>' +
+      // Beton-Textur (subtle Punkte)
+      '<g fill="'+palette.line+'" opacity="0.15">' +
+        '<circle cx="100" cy="65" r="0.8"/>' +
+        '<circle cx="115" cy="72" r="0.8"/>' +
+        '<circle cx="135" cy="68" r="0.8"/>' +
+        '<circle cx="150" cy="85" r="0.8"/>' +
+        '<circle cx="108" cy="88" r="0.8"/>' +
+        '<circle cx="160" cy="75" r="0.8"/>' +
+      '</g>' +
+      // Einflugloch (oval, seitlich)
+      '<ellipse cx="150" cy="78" rx="8" ry="5" fill="'+palette.bird+'"/>' +
+      '<ellipse cx="150" cy="78" rx="8" ry="5" fill="none" stroke="'+palette.line+'" stroke-width="1"/>' +
+      // Mauersegler Silhouette im Flug
+      '<path d="M 195 50 Q 202 44, 212 46 L 212 49 Q 204 47, 198 53 Z" fill="'+palette.bird+'"/>' +
+      '<text x="130" y="154" text-anchor="middle" fill="'+palette.lineLight+'" font-family="Inter,sans-serif" font-size="9" font-weight="500" letter-spacing="1">NISTSTEIN · IN FASSADE INTEGRIERT</text>' +
+      '</svg>';
+  }
+  
+  if(typ === 'aufputz_nistkasten'){
+    return '<svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" aria-label="Aufputz-Nistkasten — Holzkasten unter Dachvorsprung montiert">' +
+      '<rect width="260" height="160" fill="'+palette.sky+'" rx="8"/>' +
+      // Wand
+      '<rect x="20" y="15" width="220" height="125" fill="#f5ede0" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Dachvorsprung
+      '<polygon points="20,15 240,15 240,30 20,30" fill="'+palette.darkWood+'" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      '<polygon points="20,28 240,28 230,42 30,42" fill="'+palette.wood+'" stroke="'+palette.line+'" stroke-width="1"/>' +
+      // Nistkasten (Holz, hängt unter Dachvorsprung)
+      '<rect x="100" y="55" width="70" height="45" fill="'+palette.wood+'" stroke="'+palette.line+'" stroke-width="1.5"/>' +
+      // Holzmaserung
+      '<g stroke="'+palette.darkWood+'" stroke-width="0.4" opacity="0.5">' +
+        '<line x1="105" y1="60" x2="165" y2="60"/>' +
+        '<line x1="105" y1="70" x2="165" y2="70"/>' +
+        '<line x1="105" y1="80" x2="165" y2="80"/>' +
+        '<line x1="105" y1="90" x2="165" y2="90"/>' +
+      '</g>' +
+      // Dach des Kastens
+      '<polygon points="95,55 175,55 170,48 100,48" fill="'+palette.darkWood+'" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Einflugloch (unten)
+      '<ellipse cx="135" cy="92" rx="5" ry="3" fill="'+palette.bird+'"/>' +
+      // Befestigung (Halterung)
+      '<line x1="100" y1="55" x2="100" y2="42" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      '<line x1="170" y1="55" x2="170" y2="42" stroke="'+palette.line+'" stroke-width="1.2"/>' +
+      // Mauersegler im Anflug
+      '<path d="M 195 105 Q 202 100, 212 102 L 212 105 Q 204 103, 198 108 Z" fill="'+palette.bird+'"/>' +
+      // Boden-Andeutung
+      '<line x1="20" y1="125" x2="240" y2="125" stroke="'+palette.line+'" stroke-width="0.6" stroke-dasharray="4,3" opacity="0.4"/>' +
+      '<text x="130" y="154" text-anchor="middle" fill="'+palette.lineLight+'" font-family="Inter,sans-serif" font-size="9" font-weight="500" letter-spacing="1">AUFPUTZ · UNTER DACHVORSPRUNG</text>' +
+      '</svg>';
+  }
+  
+  // Fallback: generisches Nisthilfen-Icon
+  return '<svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect width="260" height="160" fill="'+palette.sky+'" rx="8"/>' +
+    '<rect x="90" y="50" width="80" height="60" fill="'+palette.wood+'" stroke="'+palette.line+'" stroke-width="1.5"/>' +
+    '<polygon points="85,50 175,50 165,40 95,40" fill="'+palette.darkWood+'"/>' +
+    '<ellipse cx="130" cy="80" rx="5" ry="3" fill="'+palette.bird+'"/>' +
+    '</svg>';
+}
+
+function render(a){
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('content').classList.remove('hidden');
+  
+  document.title = a.name_deutsch + ' · Artenschutz-Atlas';
+  document.querySelector('meta[name="description"]').setAttribute('content',
+    a.name_deutsch + ' (' + (a.name_wissenschaftlich||'') + '): ' + (a.beschreibung_kurz||''));
+  
+  document.getElementById('crumb-name').textContent = a.name_deutsch;
+  var gruppe = GRUPPEN[a.artengruppe] || {label:a.artengruppe, icon:'·'};
+  document.getElementById('art-gruppe').innerHTML = gruppe.icon + ' ' + gruppe.label;
+  document.getElementById('art-name').textContent = a.name_deutsch;
+  document.getElementById('art-sci').textContent = a.name_wissenschaftlich || '';
+  document.getElementById('art-lead').textContent = a.beschreibung_kurz || '';
+  
+  if(a.foto_url){
+    document.getElementById('art-img').src = a.foto_url;
+    document.getElementById('art-img').alt = a.name_deutsch;
+    document.getElementById('art-attr').textContent = 'Bild: ' + (a.bild_attribution || '—') + ' · via iNaturalist';
+  }
+  
+  var badges = [];
+  if(a.schutzstatus === 'streng') badges.push('<span class="badge schutz-streng">STRENG GESCHÜTZT · FFH IV</span>');
+  else badges.push('<span class="badge schutz-besonders">BESONDERS GESCHÜTZT · § 44 BNatSchG</span>');
+  if(a.rote_liste_deutschland){
+    var rlMap = {'1':'Rote Liste 1 · vom Aussterben bedroht','2':'Rote Liste 2 · stark gefährdet','3':'Rote Liste 3 · gefährdet','V':'Vorwarnliste','G':'Gefährdung anzunehmen','Vorwarnliste':'Vorwarnliste'};
+    badges.push('<span class="badge rote-liste">' + (rlMap[a.rote_liste_deutschland] || 'Rote Liste: ' + a.rote_liste_deutschland) + '</span>');
+  }
+  document.getElementById('art-badges').innerHTML = badges.join('');
+  
+  var quicks = [];
+  if(a.wikipedia_url) quicks.push('<a href="'+esc(a.wikipedia_url)+'" class="quicklink" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Wikipedia</a>');
+  if(a.nabu_url) quicks.push('<a href="'+esc(a.nabu_url)+'" class="quicklink" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>NABU</a>');
+  if(a.stimme_url) quicks.push('<a href="'+esc(a.stimme_url)+'" class="quicklink" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>Stimme anhören</a>');
+  if(a.steckbrief_pdf_url) quicks.push('<a href="'+esc(a.steckbrief_pdf_url)+'" class="quicklink" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</a>');
+  document.getElementById('art-quicklinks').innerHTML = quicks.join('');
+  
+  // === LEBENSWEISE ===
+  if(a.beschreibung_lang){
+    document.getElementById('art-beschreibung-lang').textContent = a.beschreibung_lang;
+  } else {
+    document.getElementById('art-beschreibung-lang').classList.add('hidden');
+  }
+  
+  var facts = [];
+  if(a.lebensweise) facts.push({t:'Lebensweise',ic:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',tx:a.lebensweise});
+  if(a.nahrung) facts.push({t:'Nahrung',ic:'<path d="M6 13.87A4 4 0 017.41 6a5.11 5.11 0 011.05-1.54 5 5 0 017.08 0A5.11 5.11 0 0116.59 6 4 4 0 0118 13.87V21H6z"/><line x1="6" y1="17" x2="18" y2="17"/>',tx:a.nahrung});
+  if(a.verbreitung) facts.push({t:'Verbreitung',ic:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>',tx:a.verbreitung});
+  if(a.bestand_trend) facts.push({t:'Bestand & Trend',ic:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',tx:a.bestand_trend});
+  
+  if(facts.length > 0){
+    document.getElementById('fact-grid').innerHTML = facts.map(function(f){
+      return '<div class="fact-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+f.ic+'</svg>'+f.t+'</h3><p>'+esc(f.tx)+'</p></div>';
+    }).join('');
+  } else if(!a.beschreibung_lang){
+    hideSection('lebensweise-section');
+  }
+  
+  // === STRUKTUREN ===
+  if(a.relevante_strukturen){
+    document.getElementById('relevante-strukturen').textContent = a.relevante_strukturen;
+  } else {
+    hideSection('strukturen-section');
+  }
+  
+  // === ERKENNEN ===
+  if(a.erkennen_aktivitaet || a.anzeichen_am_gebaeude){
+    document.getElementById('erkennen-aktivitaet').textContent = a.erkennen_aktivitaet || 'Keine Angaben.';
+    document.getElementById('anzeichen-am-gebaeude').textContent = a.anzeichen_am_gebaeude || 'Keine Angaben.';
+    if(a.stimme_url){
+      var link = document.getElementById('stimme-link');
+      link.href = a.stimme_url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.classList.remove('hidden');
+    }
+  } else {
+    hideSection('erkennen-section');
+  }
+  
+  // === KONFLIKT ===
+  var konflikte = a.konflikt_bauvorhaben || [];
+  if(konflikte.length > 0){
+    document.getElementById('konflikt-grid').innerHTML = konflikte.map(function(k){
+      return '<div class="konflikt-card"><div class="konflikt-card-title">'+esc(k)+'</div><div class="konflikt-card-body">Prüfen Sie vor Beginn Brut-/Ruhestätten der Art</div></div>';
+    }).join('');
+  } else {
+    document.getElementById('konflikt-grid').classList.add('hidden');
+  }
+  if(a.bauzeit_optimal){
+    document.getElementById('bauzeit-text').textContent = a.bauzeit_optimal;
+  } else {
+    document.getElementById('bauzeit-block').classList.add('hidden');
+  }
+  if(konflikte.length === 0 && !a.bauzeit_optimal) hideSection('konflikt-section');
+  
+  // === NISTHILFEN ===
+  var nisttypen = a.nisthilfen_typen || [];
+  if(nisttypen.length > 0){
+    var roman = ['I','II','III','IV','V','VI'];
+    document.getElementById('nisthilfen-typen-grid').innerHTML = nisttypen.map(function(n, i){
+      return '<div class="nisthilfe-typ">' +
+        '<div class="nisthilfe-illu">' + nisthilfeIllustration(n.typ) + '</div>' +
+        '<div class="typ-num">'+(roman[i]||(i+1))+'</div><h3>'+esc(n.name)+'</h3><p>'+esc(n.beschreibung)+'</p>'+(n.vorteil ? '<div class="vorteil">'+esc(n.vorteil)+'</div>' : '')+'</div>';
+    }).join('');
+  } else {
+    document.getElementById('nisthilfen-typen-grid').classList.add('hidden');
+  }
+  
+  var specs = [];
+  if(a.nisthilfen_masse) specs.push({t:'Maße & Einflugloch',tx:a.nisthilfen_masse});
+  if(a.nisthilfen_platzierung) specs.push({t:'Anbringung & Position',tx:a.nisthilfen_platzierung});
+  if(specs.length > 0){
+    document.getElementById('specs-block').innerHTML = specs.map(function(s){
+      return '<div class="spec-card"><h4>'+esc(s.t)+'</h4><p>'+esc(s.tx)+'</p></div>';
+    }).join('');
+  } else {
+    document.getElementById('specs-block').classList.add('hidden');
+    document.getElementById('specs-headline').classList.add('hidden');
+  }
+  if(nisttypen.length === 0 && specs.length === 0) hideSection('nisthilfen-typen-section');
+  
+  // === PRAXIS ===
+  var praxis = a.praxis_beispiele || [];
+  if(praxis.length > 0){
+    document.getElementById('praxis-list').innerHTML = praxis.map(function(p){
+      return '<article class="praxis-case">' +
+        '<div class="praxis-head">' +
+          '<div class="meta">' +
+            (p.ort ? '<span>📍 '+esc(p.ort)+'</span>' : '') +
+            (p.jahr ? '<span>🗓 '+esc(p.jahr)+'</span>' : '') +
+          '</div>' +
+          '<h3>'+esc(p.titel)+'</h3>' +
+        '</div>' +
+        '<div class="praxis-body">' +
+          (p.situation ? '<div class="praxis-col"><h4>Ausgangssituation</h4><p>'+esc(p.situation)+'</p></div>' : '') +
+          (p.massnahme ? '<div class="praxis-col"><h4>Maßnahme</h4><p>'+esc(p.massnahme)+'</p></div>' : '') +
+          (p.ergebnis ? '<div class="praxis-col"><h4>Ergebnis</h4><p>'+esc(p.ergebnis)+'</p></div>' : '') +
+        '</div>' +
+        (p.lehre || p.quelle_url ? 
+          '<div class="praxis-foot">' +
+            (p.lehre ? '<div class="praxis-lehre">„'+esc(p.lehre)+'"</div>' : '<div class="praxis-lehre"></div>') +
+            (p.quelle_url ? '<a href="'+esc(p.quelle_url)+'" class="praxis-source" target="_blank" rel="noopener">Originalbericht ↗</a>' : '') +
+          '</div>'
+        : '') +
+      '</article>';
+    }).join('');
+  } else {
+    hideSection('praxis-section');
+  }
+  
+  // === QUELLEN ===
+  var quellen = a.quellen || [];
+  if(quellen.length > 0){
+    document.getElementById('quellen-list').innerHTML = quellen.map(function(q){
+      var metaParts = [];
+      if(q.autoren) metaParts.push(esc(q.autoren));
+      if(q.doi) metaParts.push('DOI: '+esc(q.doi));
+      if(q.lizenz_hinweis) metaParts.push(esc(q.lizenz_hinweis));
+      return '<div class="quelle-card">' +
+        (q.organisation ? '<div class="org">'+esc(q.organisation)+'</div>' : '') +
+        '<h4>'+esc(q.titel)+'</h4>' +
+        (metaParts.length > 0 ? '<div class="meta">'+metaParts.join(' · ')+'</div>' : '') +
+        (q.url ? '<a href="'+esc(q.url)+'" target="_blank" rel="noopener">'+esc(q.url)+'</a>' : '') +
+      '</div>';
+    }).join('');
+  } else {
+    hideSection('quellen-section');
+  }
+}
+</script>
+</body>
+</html>
