@@ -1,16 +1,17 @@
 /**
  * Atlas Public Data Client
- * Nutzt Edge Function `atlas-public-data` (verify_jwt=false) — kein Anon-Key nötig.
+ * Nutzt direkte PostgREST-Calls mit Anon-Key (RLS-geschützt).
  */
 
 const SUPABASE_URL = 'https://wsubvpdyakzpnapgsrnm.supabase.co';
-const PUBLIC_API = `${SUPABASE_URL}/functions/v1/atlas-public-data`;
-
-// Direkte Tabellen-Reads via PostgREST (anon key, RLS-geschützt)
 const SUPABASE_ANON_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  ''; // wird via Vercel ENV gesetzt
+  '';
 const REST_BASE = `${SUPABASE_URL}/rest/v1`;
+
+async function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
 
 export async function restGet<T = unknown>(
   table: string,
@@ -18,31 +19,40 @@ export async function restGet<T = unknown>(
   revalidate = 86400
 ): Promise<T[]> {
   const url = `${REST_BASE}/${table}?${query}`;
-  const r = await fetch(url, {
-    headers: {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      Accept: 'application/json',
-    },
-    next: { revalidate },
-  });
-  if (!r.ok) {
-    console.error(`Supabase REST ${table} failed: ${r.status} ${await r.text()}`);
-    return [];
-  }
-  return r.json();
-}
+  const MAX_RETRIES = 3;
 
-export async function publicApiGet<T = unknown>(
-  path: string,
-  revalidate = 86400
-): Promise<T | null> {
-  const r = await fetch(`${PUBLIC_API}${path}`, {
-    next: { revalidate },
-  });
-  if (!r.ok) {
-    console.error(`Atlas public API ${path} failed: ${r.status}`);
-    return null;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const r = await fetch(url, {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Accept: 'application/json',
+        },
+        next: { revalidate },
+      });
+
+      // DNS-Overflow oder Upstream-Fehler → retry
+      if (r.status === 503 || r.status === 502 || r.status === 504) {
+        if (attempt < MAX_RETRIES) {
+          await sleep(250 * Math.pow(2, attempt)); // 250ms, 500ms, 1000ms
+          continue;
+        }
+      }
+
+      if (!r.ok) {
+        console.error(`Supabase REST ${table} failed: ${r.status} ${await r.text()}`);
+        return [];
+      }
+      return r.json();
+    } catch (err) {
+      if (attempt < MAX_RETRIES) {
+        await sleep(250 * Math.pow(2, attempt));
+        continue;
+      }
+      console.error(`Supabase REST ${table} error:`, err);
+      return [];
+    }
   }
-  return r.json();
+  return [];
 }
