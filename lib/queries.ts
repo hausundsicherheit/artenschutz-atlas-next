@@ -15,6 +15,29 @@ export type Kommune = {
   longitude: number | null;
   bundesland?: string;
   kreis_name?: string;
+  // Atlas-Pilot-Felder (Phase 1, ab April 2026 befüllt)
+  hat_eigene_satzung?: boolean | null;
+  hat_bplan_festsetzung?: boolean | null;
+  hat_foerderprogramm?: boolean | null;
+  hat_kartierung?: boolean | null;
+  hat_nabu_kooperation?: boolean | null;
+  hat_gutachter_pflicht?: boolean | null;
+  hat_aad_projekt?: boolean | null;
+  satzung_details?: string | null;
+  bplan_beispiel?: string | null;
+  foerder_name?: string | null;
+  foerder_betrag_min?: number | null;
+  foerder_betrag_max?: number | null;
+  foerder_url?: string | null;
+  kartierung_seit?: number | null;
+  kartierung_partner?: string | null;
+  aad_projekt_name?: string | null;
+  nabu_ortsgruppe?: string | null;
+  nabu_url?: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  daten_status?: string | null;
+  letzte_verifizierung?: string | null;
 };
 
 export type Kreis = {
@@ -140,6 +163,29 @@ export async function getKommunePageData(
       longitude: g.longitude as number | null,
       bundesland: data.bundesland?.name as string | undefined,
       kreis_name: data.kreis?.name as string | undefined,
+      // Atlas-Pilot-Felder
+      hat_eigene_satzung: g.hat_eigene_satzung as boolean | null | undefined,
+      hat_bplan_festsetzung: g.hat_bplan_festsetzung as boolean | null | undefined,
+      hat_foerderprogramm: g.hat_foerderprogramm as boolean | null | undefined,
+      hat_kartierung: g.hat_kartierung as boolean | null | undefined,
+      hat_nabu_kooperation: g.hat_nabu_kooperation as boolean | null | undefined,
+      hat_gutachter_pflicht: g.hat_gutachter_pflicht as boolean | null | undefined,
+      hat_aad_projekt: g.hat_aad_projekt as boolean | null | undefined,
+      satzung_details: g.satzung_details as string | null | undefined,
+      bplan_beispiel: g.bplan_beispiel as string | null | undefined,
+      foerder_name: g.foerder_name as string | null | undefined,
+      foerder_betrag_min: g.foerder_betrag_min as number | null | undefined,
+      foerder_betrag_max: g.foerder_betrag_max as number | null | undefined,
+      foerder_url: g.foerder_url as string | null | undefined,
+      kartierung_seit: g.kartierung_seit as number | null | undefined,
+      kartierung_partner: g.kartierung_partner as string | null | undefined,
+      aad_projekt_name: g.aad_projekt_name as string | null | undefined,
+      nabu_ortsgruppe: g.nabu_ortsgruppe as string | null | undefined,
+      nabu_url: g.nabu_url as string | null | undefined,
+      meta_title: g.meta_title as string | null | undefined,
+      meta_description: g.meta_description as string | null | undefined,
+      daten_status: g.daten_status as string | null | undefined,
+      letzte_verifizierung: g.letzte_verifizierung as string | null | undefined,
     };
 
     return {
