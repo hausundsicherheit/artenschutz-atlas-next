@@ -6,6 +6,7 @@ import {
   getTopKommunen,
 } from '@/lib/queries';
 import HeroSection from '@/components/HeroSection';
+import KommuneFaktenSection from '@/components/KommuneFaktenSection';
 import ArtGrid from '@/components/ArtGrid';
 import SolutionsSection from '@/components/SolutionsSection';
 import MobileShopBar from '@/components/MobileShopBar';
@@ -27,8 +28,13 @@ export async function generateMetadata(
   if (!data) return { title: 'Nicht gefunden' };
 
   const { kommune } = data;
-  const title = `Artenschutz in ${kommune.name}`;
-  const description = `Geschützte Arten, Pflichten beim Bauen, Förderprogramme und konkrete Lösungen für ${kommune.name}${kommune.bundesland ? `, ${kommune.bundesland}` : ''}. Der Artenschutz-Atlas Deutschland.`;
+  // Bevorzugt verifizierte Atlas-Meta-Tags aus DB, sonst Fallback
+  const title =
+    kommune.meta_title ||
+    `Artenschutz in ${kommune.name}${kommune.bundesland ? ` — ${kommune.bundesland}` : ''} | Artenschutz-Atlas`;
+  const description =
+    kommune.meta_description ||
+    `Geschützte Arten, Pflichten beim Bauen, Förderprogramme und konkrete Lösungen für ${kommune.name}${kommune.bundesland ? `, ${kommune.bundesland}` : ''}. Der Artenschutz-Atlas Deutschland.`;
 
   return {
     title,
@@ -47,12 +53,16 @@ export default async function KommunePage({
   const data = await getKommunePageData(slug);
   if (!data) notFound();
 
-  const { kommune, kreis, arten, produkte } = data;
+  const { kommune, kreis, bundesland, arten, produkte } = data;
   const artGroups = groupArtenByArtengruppe(arten);
 
   // Produkte kommen direkt aus der EF-Response (kein separater Call)
   const verfuegbar = produkte.filter((p) => p.status === 'available').slice(0, 4);
   const planned = produkte.filter((p) => p.status === 'planned').slice(0, 4);
+
+  // Förderprogramme zählen (Pilot-Heuristik: 4 Bund + 1-2 Land + Stadt)
+  const foerderprogrammeAnzahl =
+    4 + (bundesland?.hat_eigene_verordnung ? 1 : 0) + (kommune.hat_foerderprogramm ? 1 : 0) + 1;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -85,7 +95,12 @@ export default async function KommunePage({
         kreis={kreis}
         artenAnzahl={arten.length}
         artengruppenAnzahl={artGroups.length}
-        foerderprogrammeAnzahl={7}
+        foerderprogrammeAnzahl={foerderprogrammeAnzahl}
+      />
+      <KommuneFaktenSection
+        kommune={kommune}
+        kreis={kreis}
+        bundesland={bundesland}
       />
       <ArtGrid groups={artGroups} kommunenName={kommune.name} />
       <SolutionsSection
