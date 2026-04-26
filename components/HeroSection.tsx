@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Kommune, Kreis } from '@/lib/queries';
+import KommuneMap from './KommuneMap';
 
 type Props = {
   kommune: Kommune;
@@ -26,7 +27,7 @@ export default function HeroSection({
   return (
     <section className="bg-gradient-to-b from-cream to-[#fdfbf6] pt-12 pb-12 max-md:pt-8 max-md:pb-8">
       <div className="max-w-[1280px] mx-auto px-8 max-md:px-4">
-        <div className="grid grid-cols-[1.3fr_1fr] max-[900px]:grid-cols-1 gap-12 max-md:gap-6 items-center">
+        <div className="grid grid-cols-[1.3fr_1fr] max-[900px]:grid-cols-1 gap-12 max-md:gap-6 items-start">
           <div>
             <div className="flex items-center gap-2 text-[13px] max-md:text-[12px] text-text-muted mb-3 flex-wrap">
               <Link href="/" className="hover:text-ink hover:no-underline">Atlas</Link>
@@ -81,27 +82,14 @@ export default function HeroSection({
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 max-md:p-5 shadow-card border border-border">
-            <div className="text-[11px] uppercase tracking-wider text-text-dim mb-2">Pflichten beim Bauen</div>
-            <h3 className="font-serif text-[1.4rem] max-md:text-[1.2rem] mb-4">
-              § 44 BNatSchG <em className="text-moss not-italic">gilt überall</em>
-            </h3>
-            <div className="space-y-2.5">
-              {[
-                'Vor Sanierung: Bestandsaufnahme der Brutquartiere',
-                'Bauzeitfenster außerhalb der Brutsaison einhalten',
-                'CEF-konforme Ersatzquartiere bei Verlust',
-                'Förderfähige Materialien (z.B. QNG-Ready) bevorzugen',
-              ].map((tip) => (
-                <div
-                  key={tip}
-                  className="bg-cream px-3 py-2.5 rounded-lg text-[12.5px] text-ink border-l-2 border-moss"
-                >
-                  ▸ {tip}
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Rechts: Karte mit Schutzgebieten + iNaturalist-Beobachtungen */}
+          <KommuneMap
+            latitude={kommune.latitude}
+            longitude={kommune.longitude}
+            kommunenName={kommune.name}
+            plz={null}
+            bundesland={kommune.bundesland}
+          />
         </div>
       </div>
     </section>
