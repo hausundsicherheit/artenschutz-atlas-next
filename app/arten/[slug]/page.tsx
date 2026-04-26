@@ -6,8 +6,10 @@ import {
   getKommunenForArt,
   getAlleArten,
   artengruppeLabel,
+  getBlogPostsForArt,
 } from '@/lib/queries';
 import SolutionsSection from '@/components/SolutionsSection';
+import BlogTeaserSection from '@/components/BlogTeaserSection';
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -59,6 +61,7 @@ export default async function ArtPage({
   if (!art) notFound();
 
   const kommunen = await getKommunenForArt(art.id, 12);
+  const blogPosts = await getBlogPostsForArt(slug, 3);
 
   const statusInfo = art.schutzstatus
     ? STATUS_COLORS[art.schutzstatus] || { bg: 'bg-moss/15', text: 'text-moss-dark', label: art.schutzstatus }
@@ -373,6 +376,9 @@ export default async function ArtPage({
           </div>
         </section>
       )}
+
+      {/* Blog-Beiträge zur Art */}
+      <BlogTeaserSection posts={blogPosts} context="art" contextName={art.name_deutsch} />
 
       {/* SHOP-LÖSUNGEN — gleiche Komponente wie auf Stadtseiten */}
       <SolutionsSection kommunenName={art.name_deutsch} />
