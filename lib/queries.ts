@@ -240,3 +240,138 @@ export async function getTopKommunen(limit = 20): Promise<Kommune[]> {
     return [];
   }
 }
+
+// ========================================================================
+// Art-Detail (für /arten/[slug])
+// ========================================================================
+
+export type ArtDetail = {
+  id: number;
+  slug: string;
+  name_deutsch: string;
+  name_wissenschaftlich: string;
+  artengruppe: string;
+  schutzstatus: string | null;
+  rote_liste_deutschland: string | null;
+  beschreibung_kurz: string | null;
+  beschreibung_lang: string | null;
+  foto_url: string | null;
+  bild_attribution: string | null;
+  bild_lizenz: string | null;
+  konflikt_bauvorhaben?: string[] | null;
+  bauzeitfenster?: string | null;
+  cef_massnahmen?: string | null;
+  nisthilfen?: string[] | null;
+  anzeichen_am_gebaeude?: string | null;
+  erkennungsmerkmale?: string | null;
+  wikipedia_url?: string | null;
+  nabu_url?: string | null;
+  lebensweise?: string | null;
+  relevante_strukturen?: string | null;
+  erkennen_aktivitaet?: string | null;
+  nahrung?: string | null;
+  bestand_trend?: string | null;
+  verbreitung?: string | null;
+  stimme_url?: string | null;
+  steckbrief_pdf_url?: string | null;
+  nisthilfen_typen?: Array<{ typ: string; name: string; vorteil?: string }> | null;
+  nisthilfen_masse?: string | null;
+  nisthilfen_platzierung?: string | null;
+  bauzeit_optimal?: string | null;
+  praxis_beispiele?: Array<{ ort: string; jahr?: string; lehre: string }> | null;
+  quellen?: Array<{ doi?: string; url: string; titel?: string }> | null;
+};
+
+export type KommuneVorkommen = {
+  slug: string;
+  name: string;
+  einwohner: number | null;
+  haeufigkeit?: string | null;
+};
+
+type ArtResponse = { art: ArtDetail };
+
+const SUPABASE_URL = 'https://wsubvpdyakzpnapgsrnm.supabase.co';
+// Anon-Key (öffentlich, RLS-geschützt). Wird über fetch direkt verwendet.
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzdWJ2cGR5YWt6cG5hcGdzcm5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY0NTk5NTgsImV4cCI6MjA3MjAzNTk1OH0.9MWXI1aBa6YCG0dFOShqz8mMzd2L45mOvt4T4dueN-0';
+
+/**
+ * Holt eine Art mit allen Detail-Feldern aus der EF.
+ */
+export async function getArt(slug: string): Promise<ArtDetail | null> {
+  try {
+    const data = await efGet<ArtResponse>(`art/${encodeURIComponent(slug)}`);
+    return data.art || null;
+  } catch (err) {
+    console.error(`getArt(${slug}) failed:`, err);
+    return null;
+  }
+}
+
+/**
+ * Holt die Top-Kommunen (≥100k EW), in deren Kreis diese Art vorkommt.
+ * Direct-PostgREST-Call, weil die EF keinen entsprechenden Endpunkt hat.
+ */
+export async function getKommunenForArt(
+  artId: number,
+  limit = 12
+): Promise<KommuneVorkommen[]> {
+  try {
+    // PostgREST-Query: atlas_arten_kreise → atlas_kommunen mit kreis_id IN (...)
+    // Da PostgREST kein direktes JOIN unterstützt, machen wir 2 Calls.
+    const r1 = await fetch(
+      `${SUPABASE_URL}/rest/v1/atlas_arten_kreise?art_id=eq.${artId}&select=kreis_id,haeufigkeit`,
+      {
+        headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` },
+        next: { revalidate: 86400 },
+      }
+    );
+    if (!r1.ok) return [];
+    const kreisRows = (await r1.json()) as Array<{ kreis_id: number; haeufigkeit: string | null }>;
+    if (!kreisRows.length) return [];
+
+    const kreisIds = Array.from(new Set(kreisRows.map((r) => r.kreis_id))).slice(0, 200);
+    const haeufigkeitByKreis = new Map(kreisRows.map((r) => [r.kreis_id, r.haeufigkeit]));
+
+    const inList = kreisIds.join(',');
+    const r2 = await fetch(
+      `${SUPABASE_URL}/rest/v1/atlas_kommunen?kreis_id=in.(${inList})&einwohner=gte.100000&select=slug,name,einwohner,kreis_id&order=einwohner.desc&limit=${limit}`,
+      {
+        headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` },
+        next: { revalidate: 86400 },
+      }
+    );
+    if (!r2.ok) return [];
+    const kommunen = (await r2.json()) as Array<{
+      slug: string;
+      name: string;
+      einwohner: number | null;
+      kreis_id: number;
+    }>;
+
+    return kommunen.map((k) => ({
+      slug: k.slug,
+      name: k.name,
+      einwohner: k.einwohner,
+      haeufigkeit: haeufigkeitByKreis.get(k.kreis_id) || null,
+    }));
+  } catch (err) {
+    console.error(`getKommunenForArt(${artId}) failed:`, err);
+    return [];
+  }
+}
+
+/**
+ * Liste aller Arten (für /arten Übersichtsseite + generateStaticParams).
+ */
+type ArtenListResponse = { arten: ArtDetail[] };
+export async function getAlleArten(): Promise<ArtDetail[]> {
+  try {
+    const data = await efGet<ArtenListResponse>('arten', 3600);
+    return data.arten || [];
+  } catch (err) {
+    console.error('getAlleArten failed:', err);
+    return [];
+  }
+}
