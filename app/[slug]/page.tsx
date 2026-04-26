@@ -53,12 +53,8 @@ export default async function KommunePage({
   const data = await getKommunePageData(slug);
   if (!data) notFound();
 
-  const { kommune, kreis, bundesland, arten, produkte } = data;
+  const { kommune, kreis, bundesland, arten } = data;
   const artGroups = groupArtenByArtengruppe(arten);
-
-  // Produkte kommen direkt aus der EF-Response (kein separater Call)
-  const verfuegbar = produkte.filter((p) => p.status === 'available').slice(0, 4);
-  const planned = produkte.filter((p) => p.status === 'planned').slice(0, 4);
 
   // Förderprogramme zählen (Pilot-Heuristik: 4 Bund + 1-2 Land + Stadt)
   const foerderprogrammeAnzahl =
@@ -103,11 +99,7 @@ export default async function KommunePage({
         bundesland={bundesland}
       />
       <ArtGrid groups={artGroups} kommunenName={kommune.name} />
-      <SolutionsSection
-        kommunenName={kommune.name}
-        produkteVerfuegbar={verfuegbar}
-        produktePlanned={planned}
-      />
+      <SolutionsSection kommunenName={kommune.name} />
       <MobileShopBar kommunenName={kommune.name} />
     </>
   );
