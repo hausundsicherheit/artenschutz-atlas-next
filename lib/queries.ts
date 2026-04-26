@@ -375,3 +375,125 @@ export async function getAlleArten(): Promise<ArtDetail[]> {
     return [];
   }
 }
+
+// ========================================================================
+// Blog (Phase 1)
+// ========================================================================
+
+export type BlogPost = {
+  id: number;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  excerpt: string;
+  body_md: string;
+  hero_image_url: string | null;
+  hero_image_alt: string | null;
+  kommune_slugs: string[];
+  art_slugs: string[];
+  topic_tags: string[];
+  source_url: string | null;
+  source_label: string | null;
+  ai_generated: boolean;
+  ai_model: string | null;
+  published_at: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  created_at: string;
+};
+
+export type BlogPostListItem = Omit<BlogPost, 'body_md'>;
+
+const BLOG_SELECT_LIST =
+  'id,slug,title,subtitle,excerpt,hero_image_url,hero_image_alt,kommune_slugs,art_slugs,topic_tags,source_url,source_label,ai_generated,ai_model,published_at,meta_title,meta_description,created_at';
+
+const BLOG_SELECT_FULL = BLOG_SELECT_LIST + ',body_md';
+
+/**
+ * Liste aller veröffentlichten Posts, neueste zuerst.
+ */
+export async function getBlogPosts(limit = 50): Promise<BlogPostListItem[]> {
+  try {
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/atlas_blog_posts?status=eq.published&select=${BLOG_SELECT_LIST}&order=published_at.desc&limit=${limit}`,
+      {
+        headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` },
+        next: { revalidate: 3600 },
+      }
+    );
+    if (!r.ok) return [];
+    return (await r.json()) as BlogPostListItem[];
+  } catch (err) {
+    console.error('getBlogPosts failed:', err);
+    return [];
+  }
+}
+
+/**
+ * Single Post by slug.
+ */
+export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+  try {
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/atlas_blog_posts?slug=eq.${encodeURIComponent(
+        slug
+      )}&status=eq.published&select=${BLOG_SELECT_FULL}&limit=1`,
+      {
+        headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` },
+        next: { revalidate: 3600 },
+      }
+    );
+    if (!r.ok) return null;
+    const arr = (await r.json()) as BlogPost[];
+    return arr[0] || null;
+  } catch (err) {
+    console.error(`getBlogPost(${slug}) failed:`, err);
+    return null;
+  }
+}
+
+/**
+ * Posts die zu einer Kommune gehören (für Stadtseiten-Block).
+ */
+export async function getBlogPostsForKommune(
+  kommuneSlug: string,
+  limit = 3
+): Promise<BlogPostListItem[]> {
+  try {
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/atlas_blog_posts?status=eq.published&kommune_slugs=cs.{${kommuneSlug}}&select=${BLOG_SELECT_LIST}&order=published_at.desc&limit=${limit}`,
+      {
+        headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` },
+        next: { revalidate: 3600 },
+      }
+    );
+    if (!r.ok) return [];
+    return (await r.json()) as BlogPostListItem[];
+  } catch (err) {
+    console.error(`getBlogPostsForKommune(${kommuneSlug}) failed:`, err);
+    return [];
+  }
+}
+
+/**
+ * Posts die zu einer Art gehören (für Art-Detailseiten-Block).
+ */
+export async function getBlogPostsForArt(
+  artSlug: string,
+  limit = 3
+): Promise<BlogPostListItem[]> {
+  try {
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/atlas_blog_posts?status=eq.published&art_slugs=cs.{${artSlug}}&select=${BLOG_SELECT_LIST}&order=published_at.desc&limit=${limit}`,
+      {
+        headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` },
+        next: { revalidate: 3600 },
+      }
+    );
+    if (!r.ok) return [];
+    return (await r.json()) as BlogPostListItem[];
+  } catch (err) {
+    console.error(`getBlogPostsForArt(${artSlug}) failed:`, err);
+    return [];
+  }
+}
