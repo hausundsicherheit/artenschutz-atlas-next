@@ -1,19 +1,21 @@
+import Link from 'next/link';
+
 type ArtGroup = {
   artengruppe: string;
   label: string;
   count: number;
-  arten: { name_deutsch: string }[];
+  arten: { slug: string; name_deutsch: string }[];
 };
 
-const COLOR_MAP: Record<string, { bg: string; text: string; ring: string }> = {
-  gebaeudebrueter: { bg: 'bg-[#fef4ed]', text: 'text-[#a85c2a]', ring: 'ring-[#e8a575]' },
-  gartenvogel:     { bg: 'bg-[#fff8e1]', text: 'text-[#9d7a1a]', ring: 'ring-[#dcc56a]' },
-  fledermaus:      { bg: 'bg-[#ede4f5]', text: 'text-[#6a3d8c]', ring: 'ring-[#b395cf]' },
-  reptil:          { bg: 'bg-[#e6f1e9]', text: 'text-[#2d5a3d]', ring: 'ring-[#86b394]' },
-  amphibie:        { bg: 'bg-[#e1eef5]', text: 'text-[#1f5778]', ring: 'ring-[#7eaecc]' },
-  saeugetier:      { bg: 'bg-[#f4ebe0]', text: 'text-[#8a5a15]', ring: 'ring-[#c8a070]' },
-  insekt:          { bg: 'bg-[#fdecec]', text: 'text-[#a8423a]', ring: 'ring-[#d68f88]' },
-  eule:            { bg: 'bg-[#e8e0d0]', text: 'text-[#5a4a2c]', ring: 'ring-[#a89368]' },
+const COLOR_MAP: Record<string, { bg: string; text: string; ring: string; bgHover: string }> = {
+  gebaeudebrueter: { bg: 'bg-[#fef4ed]', text: 'text-[#a85c2a]', ring: 'ring-[#e8a575]', bgHover: 'hover:bg-[#fdebdc]' },
+  gartenvogel:     { bg: 'bg-[#fff8e1]', text: 'text-[#9d7a1a]', ring: 'ring-[#dcc56a]', bgHover: 'hover:bg-[#fef0c8]' },
+  fledermaus:      { bg: 'bg-[#ede4f5]', text: 'text-[#6a3d8c]', ring: 'ring-[#b395cf]', bgHover: 'hover:bg-[#e3d6ed]' },
+  reptil:          { bg: 'bg-[#e6f1e9]', text: 'text-[#2d5a3d]', ring: 'ring-[#86b394]', bgHover: 'hover:bg-[#d8e8dc]' },
+  amphibie:        { bg: 'bg-[#e1eef5]', text: 'text-[#1f5778]', ring: 'ring-[#7eaecc]', bgHover: 'hover:bg-[#d1e3ed]' },
+  saeugetier:      { bg: 'bg-[#f4ebe0]', text: 'text-[#8a5a15]', ring: 'ring-[#c8a070]', bgHover: 'hover:bg-[#ecdfcd]' },
+  insekt:          { bg: 'bg-[#fdecec]', text: 'text-[#a8423a]', ring: 'ring-[#d68f88]', bgHover: 'hover:bg-[#f8dcdc]' },
+  eule:            { bg: 'bg-[#e8e0d0]', text: 'text-[#5a4a2c]', ring: 'ring-[#a89368]', bgHover: 'hover:bg-[#ddd1bb]' },
 };
 
 export default function ArtGrid({ groups, kommunenName }: { groups: ArtGroup[]; kommunenName: string }) {
@@ -26,14 +28,15 @@ export default function ArtGrid({ groups, kommunenName }: { groups: ArtGroup[]; 
             {groups.reduce((s, g) => s + g.count, 0)} Arten in {kommunenName} und Umgebung
           </h2>
           <p className="text-[15px] text-text-muted leading-relaxed">
-            Welche Arten leben hier — und was bedeutet das konkret für ein Bauvorhaben?
+            Welche Arten leben hier — und was bedeutet das konkret für ein Bauvorhaben? Klicken Sie auf einen Tiernamen für den Steckbrief mit Bauzeitfenster und Konflikt-Bauvorhaben.
           </p>
         </div>
 
         <div className="grid grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1 gap-3">
           {groups.map((g) => {
             const c = COLOR_MAP[g.artengruppe] || COLOR_MAP.gartenvogel;
-            const namen = g.arten.map((a) => a.name_deutsch).slice(0, 8).join(', ');
+            const arten = g.arten.slice(0, 8);
+            const rest = g.count - arten.length;
             return (
               <div
                 key={g.artengruppe}
@@ -48,8 +51,23 @@ export default function ArtGrid({ groups, kommunenName }: { groups: ArtGroup[]; 
                   </span>
                   <div className={`font-serif text-[1.4rem] ${c.text}`}>{g.count}</div>
                 </div>
-                <div className={`font-medium text-[14.5px] ${c.text} mb-1.5`}>{g.label}</div>
-                <div className="text-[12.5px] text-text-muted leading-relaxed">{namen}</div>
+                <div className={`font-medium text-[14.5px] ${c.text} mb-2`}>{g.label}</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {arten.map((a) => (
+                    <Link
+                      key={a.slug}
+                      href={`/arten/${a.slug}`}
+                      className={`inline-flex items-center text-[12px] ${c.bg} ${c.text} ${c.bgHover} px-2 py-1 rounded-md no-underline hover:no-underline transition-colors`}
+                    >
+                      {a.name_deutsch}
+                    </Link>
+                  ))}
+                  {rest > 0 && (
+                    <span className="inline-flex items-center text-[12px] text-text-dim px-2 py-1">
+                      +{rest} weitere
+                    </span>
+                  )}
+                </div>
               </div>
             );
           })}
