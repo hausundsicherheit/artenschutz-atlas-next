@@ -65,6 +65,8 @@ export type Bundesland = {
   verordnung_url: string | null;
   hat_eigene_verordnung: string | null;
   besonderheiten: string | null;
+  landesbauordnung_ref: string | null;
+  leitfaden_url: string | null;
 };
 
 export type Art = {
