@@ -242,6 +242,77 @@ export default function KommuneFaktenSection({ kommune, kreis, bundesland }: Pro
 
         </div>
 
+        {/* Bundesland-Block: Landesweite Pflichten + Landesamt */}
+        {bundesland && (bundesland.landesamt_url || bundesland.verordnung_url || bundesland.besonderheiten) && (
+          <div className="bg-cream/50 border border-border rounded-xl p-6 max-md:p-5 mt-4">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-moss/15 flex items-center justify-center text-moss-dark shrink-0 max-md:w-9 max-md:h-9">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-clay font-semibold mb-1">Landesrecht & Behörden</div>
+                <h3 className="font-serif text-[1.2rem] text-ink leading-tight">
+                  {bundesland.name}
+                  {bundesland.kuerzel && <span className="text-text-dim font-sans text-[14px] ml-2">({bundesland.kuerzel})</span>}
+                </h3>
+              </div>
+            </div>
+
+            {bundesland.besonderheiten && (
+              <p className="text-[14px] text-text-muted leading-relaxed mb-4">
+                {bundesland.besonderheiten}
+              </p>
+            )}
+
+            <div className="grid grid-cols-2 max-[700px]:grid-cols-1 gap-3">
+              {bundesland.verordnung_name && (
+                <div className="bg-white border border-border rounded-lg p-3.5">
+                  <div className="text-[10.5px] uppercase tracking-wider text-text-dim font-semibold mb-1.5">Landesnaturschutzgesetz</div>
+                  <div className="text-[13.5px] text-ink leading-snug mb-2">{bundesland.verordnung_name}</div>
+                  {bundesland.verordnung_url && (
+                    <a href={bundesland.verordnung_url} target="_blank" rel="noopener noreferrer" className="text-[12px] text-moss hover:text-moss-dark underline-offset-2 no-underline hover:no-underline">
+                      Gesetzestext ↗
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {bundesland.landesamt_name && (
+                <div className="bg-white border border-border rounded-lg p-3.5">
+                  <div className="text-[10.5px] uppercase tracking-wider text-text-dim font-semibold mb-1.5">Zuständiges Landesamt</div>
+                  <div className="text-[13.5px] text-ink leading-snug mb-2">{bundesland.landesamt_name}</div>
+                  {bundesland.landesamt_url && (
+                    <a href={bundesland.landesamt_url} target="_blank" rel="noopener noreferrer" className="text-[12px] text-moss hover:text-moss-dark underline-offset-2 no-underline hover:no-underline">
+                      Webseite ↗
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {bundesland.landesbauordnung_ref && (
+                <div className="bg-white border border-border rounded-lg p-3.5">
+                  <div className="text-[10.5px] uppercase tracking-wider text-text-dim font-semibold mb-1.5">Landesbauordnung</div>
+                  <div className="text-[13px] text-ink leading-snug">{bundesland.landesbauordnung_ref}</div>
+                </div>
+              )}
+
+              {bundesland.leitfaden_url && (
+                <div className="bg-white border border-border rounded-lg p-3.5">
+                  <div className="text-[10.5px] uppercase tracking-wider text-text-dim font-semibold mb-1.5">Artenschutz-Leitfaden</div>
+                  <div className="text-[13px] text-ink leading-snug mb-2">Fachinformationen zum Artenschutz im Land</div>
+                  <a href={bundesland.leitfaden_url} target="_blank" rel="noopener noreferrer" className="text-[12px] text-moss hover:text-moss-dark underline-offset-2 no-underline hover:no-underline">
+                    Zum Leitfaden ↗
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* UNB-Kontakt-Block (kommt aus dem Kreis) */}
         {kreis && (kreis.unb_name || kreis.unb_url || kreis.unb_telefon || kreis.unb_email) && (
           <div className="bg-ink text-cream rounded-xl p-6 max-md:p-5 mt-4">
