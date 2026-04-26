@@ -21,7 +21,7 @@ async function sleep(ms: number) {
  */
 export async function efGet<T = unknown>(
   path: string,
-  revalidate = 86400
+  revalidate = 3600
 ): Promise<T> {
   const url = `${EF_BASE}/${path}`;
   const MAX_RETRIES = 3;
