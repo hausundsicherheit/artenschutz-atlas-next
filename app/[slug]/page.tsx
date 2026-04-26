@@ -4,12 +4,14 @@ import {
   getKommunePageData,
   groupArtenByArtengruppe,
   getTopKommunen,
+  getBlogPostsForKommune,
 } from '@/lib/queries';
 import HeroSection from '@/components/HeroSection';
 import KommuneFaktenSection from '@/components/KommuneFaktenSection';
 import ArtGrid from '@/components/ArtGrid';
 import SolutionsSection from '@/components/SolutionsSection';
 import MobileShopBar from '@/components/MobileShopBar';
+import BlogTeaserSection from '@/components/BlogTeaserSection';
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -55,6 +57,7 @@ export default async function KommunePage({
 
   const { kommune, kreis, bundesland, arten } = data;
   const artGroups = groupArtenByArtengruppe(arten);
+  const blogPosts = await getBlogPostsForKommune(slug, 3);
 
   // Förderprogramme zählen (Pilot-Heuristik: 4 Bund + 1-2 Land + Stadt)
   const foerderprogrammeAnzahl =
@@ -99,6 +102,7 @@ export default async function KommunePage({
         bundesland={bundesland}
       />
       <ArtGrid groups={artGroups} kommunenName={kommune.name} />
+      <BlogTeaserSection posts={blogPosts} context="kommune" contextName={kommune.name} />
       <SolutionsSection kommunenName={kommune.name} />
       <MobileShopBar kommunenName={kommune.name} />
     </>
